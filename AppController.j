@@ -94,8 +94,6 @@
 
 - (int)tableView:(CPTableView)aTableView heightOfRow:(int)aRow
 {
-    //debugger;
-    console.log(aRow);
     // To calculate the height of the row we find the width of the column
     var width = [tweetsColumn width];
 
