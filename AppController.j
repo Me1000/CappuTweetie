@@ -2,6 +2,8 @@
 @import "TweetDataView.j"
 @import "TwitterAPIController.j"
 @import <Foundation/CPDate.j>
+@import "NewTweetWindow.j"
+@import "TwitterWindow.j"
 
 @implementation AppController : CPObject
 {
@@ -12,17 +14,56 @@
     CPTextField cachedTextField;
 
     CPArrayController tweetController @accessors;
+
+    CPView sidebar;
 }
 
 - (void)applicationDidFinishLaunching:(CPNotification)aNotification
 {
-    var theWindow = [[CPWindow alloc] initWithContentRect:CGRectMake(100,100,345,585) styleMask:CPBorderlessBridgeWindowMask|CPClosableWindowMask|CPMiniaturizableWindowMask],
+    var theWindow = [[CPWindow alloc] initWithContentRect:CGRectMake(100,100,405,585) styleMask:CPClosableWindowMask|CPMiniaturizableWindowMask],
         contentView = [theWindow contentView],
         bgColor = [CPColor colorWithRed:210/255 green:210/255 blue:210/255 alpha:1];
 
+    [theWindow _setWindowView:[[TwitterWindow alloc] initWithFrame:[theWindow._windowView frame] styleMask:CPClosableWindowMask|CPMiniaturizableWindowMask]];
+    [theWindow setMovableByWindowBackground:YES];
     [contentView setBackgroundColor:bgColor];
 
-    tweetScrollView = [[CPScrollView alloc] initWithFrame:CGRectMake(0,0, 340, 585)];
+
+    //create the side bar
+    sidebar = [[CPView alloc] initWithFrame:CGRectMake(0,0,60,585)];
+    var sidebg = [CPColor colorWithPatternImage:[[CPThreePartImage alloc] initWithImageSlices:[
+        [[CPImage alloc] initWithContentsOfFile:[[CPBundle mainBundle] pathForResource:"Sidebar/sidebar-top.png"] size:CGSizeMake(60,5)],
+        [[CPImage alloc] initWithContentsOfFile:[[CPBundle mainBundle] pathForResource:"Sidebar/sidebar-middle.png"] size:CGSizeMake(60,4)],
+        [[CPImage alloc] initWithContentsOfFile:[[CPBundle mainBundle] pathForResource:"Sidebar/sidebar-middle.png"] size:CGSizeMake(60,4)]
+    ] isVertical:YES]];
+    [sidebar setBackgroundColor:sidebg];
+
+    var avatarView = [[CPImageView alloc] initWithFrame:CGRectMake(6,6,48,48)];
+    [avatarView setImage:[[CPImage alloc] initWithContentsOfFile:[[CPBundle mainBundle] pathForResource:"Sidebar/avatar.png"] size:CGSizeMake(48,48)]];
+    [sidebar addSubview:avatarView];
+
+    var topWindowView = [[CPView alloc] initWithFrame:CGRectMake(0,0,405,27)];
+    [topWindowView setBackgroundColor:[CPColor colorWithPatternImage:[[CPImage alloc] initWithContentsOfFile:[[CPBundle mainBundle] pathForResource:"windowtoolbar3.png"] size:CGSizeMake(25,27)]]]
+    [contentView addSubview:topWindowView];
+
+
+    var navTree = [[CPTextField alloc] initWithFrame:CGRectMake(70,5,100,20)];
+    [navTree setStringValue:"Timeline"];
+    [navTree setFont:[CPFont boldSystemFontOfSize:12]];
+    [navTree setTextColor:[CPColor colorWithRed:33/255 green:33/255 blue:33/255 alpha:1]];
+    [navTree setTextShadowColor:[CPColor colorWithWhite:1 alpha:.5]];
+    [navTree setTextShadowOffset:CGSizeMake(0,1)];
+    [topWindowView addSubview:navTree];
+
+    var divider = [[CPImageView alloc] initWithFrame:CGRectMake(125, 0, 11, 26)];
+    [divider setImage:[[CPImage alloc] initWithContentsOfFile:[[CPBundle mainBundle] pathForResource:"BreadcrumbDivider.png"] size:CGSizeMake(11,26)]];
+    [topWindowView addSubview:divider];
+
+
+    [contentView addSubview:sidebar];
+
+
+    tweetScrollView = [[CPScrollView alloc] initWithFrame:CGRectMake(60,35, 340, 550)];
     // we can make this size zero because it will be sized to fit when we add it to the scrollview.
     tweetTable = [[CPTableView alloc] initWithFrame:CGRectMakeZero()];
 
@@ -113,38 +154,6 @@
     return [cachedTextField frame].size.height + 35;
 }
 
-@end
-
-@implementation CPTableView (foo)
-- (void)noteHeightOfRowsWithIndexesChanged:(CPIndexSet)anIndexSet
-{
-//    if (!(_implementedDelegateMethods & CPTableViewDelegate_tableView_heightOfRow_))
-  //      return;
-
-    // this method will update the height of those rows, but since the cached array also contains
-    // the height above the row it needs to recalculate for the rows below it too
-    var i = [anIndexSet firstIndex],
-        count = _numberOfRows - i,
-        heightAbove = (i > 0) ? _cachedRowHeights[i - 1].height + _cachedRowHeights[i - 1].heightAboveRow + _intercellSpacing.height : 0;
-
-    for (; i < count; i++)
-    {
-        // update the cache if the user told us to
-        if ([anIndexSet containsIndex:i])
-            var height = [_delegate tableView:self heightOfRow:i];
-
-            _cachedRowHeights[i] = {"height":height, "heightAboveRow":heightAbove};
-
-        heightAbove += height + _intercellSpacing.height;
-    }
-
-    [self setNeedsLayout];
-    //_reloadAllRows = YES;
-    //[self load];
-    //[self reloadData]; //!!!!!!!!
-
-    [self _layoutDataViewsInRows:[CPIndexSet indexSetWithIndexesInRange:CPMakeRange(0,[self numberOfRows]-1)] columns:[CPIndexSet indexSetWithIndexesInRange:CPMakeRange(0,[self numberOfColumns]-1)]];
-}
 @end
 
 OPEN_LINK = function(url)

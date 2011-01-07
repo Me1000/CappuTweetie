@@ -39,7 +39,7 @@
         [replyButton setAlternateImage:altImage];
         [replyButton setAutoresizingMask:CPViewMinXMargin];
         
-        authorAvatarView = [[CPImageView alloc] initWithFrame:CGRectMake(5, 5, 50, 50)];
+        authorAvatarView = [[RoundedImageView alloc] initWithFrame:CGRectMake(5, 5, 50, 50)];
 
         var tweetBackground = [[CPView alloc] initWithFrame:CGRectMake(60, 2, aFrame.size.width - 62, aFrame.size.height - 4)];
 
@@ -70,54 +70,9 @@
 - (void)replyToTweet:(id)sender
 {
     // FIX ME: this will need to be a custom window since it has to display the char count in the top right corner
-    var replyWindow = [[CPWindow alloc] initWithContentRect:CGRectMake(100, 100, 400, 135) styleMask:CPTitledWindowMask|CPClosableWindowMask|CPMiniaturizableWindowMask],
-        contentView = [replyWindow contentView];
+    var replyWindow = [[NewTweetWindow alloc] initWithTweetReply:tweet];
 
-    [replyWindow setTitle:"In reply to "+tweet.user.name];
-
-
-    var bottomView = [[CPView alloc] initWithFrame:CGRectMake(0, 100, 400, 35)];
-    bg = [[CPImage alloc] initWithContentsOfFile:[[CPBundle mainBundle] pathForResource:"bottomColor.png"]];
-    [bottomView setBackgroundColor:[CPColor colorWithPatternImage:bg]];
-
-    var button = [[CPButton alloc] initWithFrame:CGRectMake(295, 5, 95, 24)];
-    [button setTitle:"Post"];
-    [bottomView addSubview:button];
-
-    var color = [button currentValueForThemeAttribute:"bezel-color"],
-        downColor = [button valueForThemeAttribute:"bezel-color" inState:CPThemeStateHighlighted];
-
-    var button = [CPButtonBar actionPopupButton];
-    [button setFrame:CGRectMake(255, 5, 35, 24)];
-    [button setValue:color forThemeAttribute:"bezel-color"];
-    [button setValue:downColor forThemeAttribute:"bezel-color" inState:CPThemeStateHighlighted];
-
-    var item = [[CPMenuItem alloc] initWithTitle:"Shorten URLs..." action:nil keyEquivalent:"s"];
-    [item setKeyEquivalentModifierMask:CPAlternateKeyMask|CPCommandKeyMask];
-    [button addItem:item];
-
-    [button addItem:[CPMenuItem separatorItem]];
-
-    [button addItemWithTitle:"Add Image..."];
-
-    var item = [[CPMenuItem alloc] initWithTitle:"Record Video..." action:nil keyEquivalent:"v"];
-    [item setKeyEquivalentModifierMask:CPAlternateKeyMask|CPCommandKeyMask];
-    [button addItem:item];
-
-    [bottomView addSubview:button];
-
-    var button = [[CPPopUpButton alloc] initWithFrame:CGRectMake(5,5, 115, 24)];
-
-    var item = [[CPMenuItem alloc] initWithTitle:"Me1000" action:nil keyEquivalent:nil];
-    [item setImage:[[CPImage alloc] initWithContentsOfFile:"http://a3.twimg.com/profile_images/940080497/IMG_2697_normal.jpg" size:CGSizeMake(15,15)]];
-    [button addItem:item];
-
-    var item = [[CPMenuItem alloc] initWithTitle:"Cappuccino" action:nil keyEquivalent:nil];
-    [item setImage:[[CPImage alloc] initWithContentsOfFile:"http://a0.twimg.com/profile_images/59980309/cappuccino-icon_normal.png" size:CGSizeMake(15,15)]];
-    [button addItem:item];
-
-    [bottomView addSubview:button];
-    [contentView addSubview:bottomView];
+   
 
     [replyWindow orderFront:self];
 
@@ -328,4 +283,32 @@
     return self;
 }
 
+@end
+
+@implementation RoundedImageView : CPImageView
+- (id)initWithFrame:(CGRect)aRect
+{
+    self = [super initWithFrame:aRect];
+
+    if (self)
+    {
+        _DOMImageElement.style.borderRadius = "5px";
+        _DOMImageElement.style.mozBorderRadius = "5px";
+    }
+
+    return self;
+}
+
+- (id)initWithCoder:(CPCoder)aCoder
+{
+    self = [super initWithCoder:aCoder];
+
+    if (self)
+    {
+        _DOMImageElement.style.borderRadius = "5px";
+        _DOMImageElement.style.mozBorderRadius = "5px";
+    }
+
+    return self;
+}
 @end
