@@ -7,6 +7,7 @@
 @import "../Views/SidebarView.j"
 @import "../Views/BreadcrumbView.j"
 @import "../Views/TweetScroller.j"
+@import "../Views/TweetTableView.j"
 
 @implementation AppController : CPObject
 {
@@ -41,12 +42,9 @@
     
     // Main tweet tableview...
     // we can make this size zero because it will be sized to fit when we add it to the scrollview.
-    tweetTable = [[CPTableView alloc] initWithFrame:CGRectMakeZero()];
+    tweetTable = [[TweetTableView alloc] initWithFrame:CGRectMakeZero()];
     [tweetTable setDelegate:self];
     [tweetTable setBackgroundColor:bgColor];
-    [tweetTable setHeaderView:nil];
-    [tweetTable setCornerView:nil];
-    [tweetTable setSelectionHighlightColor:[CPColor colorWithRed:241/255 green:241/255 blue:241/255 alpha:1]];
 
     // Load tweets...
     tweetController = [[CPArrayController alloc] init];
