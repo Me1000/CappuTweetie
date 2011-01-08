@@ -72,11 +72,14 @@
 
     if (x > width - 40)
     {
-        var newX = width - x - 80;
+        var newX = width - x - 40;
         [container setFrameOrigin:CGPointMake(newX, 0)];
     }
     else
+    {
         [container setFrameOrigin:CGPointMakeZero()];
+    }
+
 }
 
 @end

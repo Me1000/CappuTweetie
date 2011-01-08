@@ -30,8 +30,12 @@
     [contentView setBackgroundColor:bgColor];
 
     // Breadcrumbs...
-    var breadcrumbs = [[BreadcrumbView alloc] initWithFrame:CGRectMake(0,0,405,27)];
+    var breadcrumbs = [[BreadcrumbView alloc] initWithFrame:CGRectMake(60,0,345,27)];
     [breadcrumbs addItem:"Timeline"];
+    [breadcrumbs addItem:"Me1000"];
+    [breadcrumbs addItem:"devongovett"];
+    [breadcrumbs addItem:"Tolmasky"];
+
     [contentView addSubview:breadcrumbs];
 
     // Sidebar...
