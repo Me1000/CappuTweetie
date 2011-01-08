@@ -28,18 +28,18 @@
     [theWindow setMovableByWindowBackground:YES];
     [contentView setBackgroundColor:bgColor];
 
-	// Breadcrumbs...
+    // Breadcrumbs...
     var breadcrumbs = [[BreadcrumbView alloc] initWithFrame:CGRectMake(0,0,405,27)];
-	[breadcrumbs addItem:"Timeline"];
-	[contentView addSubview:breadcrumbs];
+    [breadcrumbs addItem:"Timeline"];
+    [contentView addSubview:breadcrumbs];
 
-	// Sidebar...
-	var sidebar = [[SidebarView alloc] initWithFrame:CGRectMake(0, 0, 60, 585)];
+    // Sidebar...
+    var sidebar = [[SidebarView alloc] initWithFrame:CGRectMake(0, 0, 60, 585)];
     [contentView addSubview:sidebar];
 
     tweetScrollView = [[CPScrollView alloc] initWithFrame:CGRectMake(60, 27, 340, 535)];
-	
-	// Main tweet tableview...
+    
+    // Main tweet tableview...
     // we can make this size zero because it will be sized to fit when we add it to the scrollview.
     tweetTable = [[CPTableView alloc] initWithFrame:CGRectMakeZero()];
     [tweetTable setDelegate:self];
@@ -48,11 +48,11 @@
     [tweetTable setCornerView:nil];
     [tweetTable setSelectionHighlightColor:[CPColor colorWithRed:241/255 green:241/255 blue:241/255 alpha:1]];
 
-	// Load tweets...
-	tweetController = [[CPArrayController alloc] init];
+    // Load tweets...
+    tweetController = [[CPArrayController alloc] init];
     apiController = [[TwitterAPIController alloc] init];
     [apiController getTweets];
-	
+    
     tweetsColumn = [[CPTableColumn alloc] initWithIdentifier:"tweets"];
     [tweetsColumn setWidth:322];
     [tweetTable addTableColumn:tweetsColumn];
@@ -60,8 +60,8 @@
 
     var dataViewPrototype = [[TweetDataView alloc] initWithFrame:CGRectMake(0,0,322,100)];
     [tweetsColumn setDataView:dataViewPrototype];
-	
-	// Custom scrolling....
+    
+    // Custom scrolling....
     var newScroller = [[TweetScroller alloc] initWithFrame:CGRectMake(0,0,11,100)];
     [tweetScrollView setVerticalScroller:newScroller];
 
@@ -69,32 +69,32 @@
     [tweetScrollView setHasHorizontalScroller:NO];
 
     [contentView addSubview:tweetScrollView];
-	
-	// Bottom toolbar
-	var toolbar = [[CPView alloc] initWithFrame:CGRectMake(0, 562, 405, 23)];
-	var bg = [[CPImage alloc] initWithContentsOfFile:[[CPBundle mainBundle] pathForResource:"toolbar.png"]];
-	[toolbar setBackgroundColor:[CPColor colorWithPatternImage:bg]];
-	
-	// Compose button...
-	var composeImage = [[CPImage alloc] initWithContentsOfFile:[[CPBundle mainBundle] pathForResource:"SmallCompose.png"] size:CGSizeMake(14, 13)];
-	var composeImageActive = [[CPImage alloc] initWithContentsOfFile:[[CPBundle mainBundle] pathForResource:"SmallComposeActive.png"] size:CGSizeMake(14, 13)];
-	
-	var composeButton = [[CPButton alloc] initWithFrame:CGRectMake(9, 6, 14, 13)];
-	[composeButton setBordered:NO];
-	[composeButton setImage:composeImage];
-	[composeButton setAlternateImage:composeImageActive];
-	[composeButton setTarget:self];
-	[composeButton setAction:@selector(newTweet:)];
-	
-	[toolbar addSubview:composeButton];
-	[contentView addSubview:toolbar];
+    
+    // Bottom toolbar
+    var toolbar = [[CPView alloc] initWithFrame:CGRectMake(0, 562, 405, 23)];
+    var bg = [[CPImage alloc] initWithContentsOfFile:[[CPBundle mainBundle] pathForResource:"toolbar.png"]];
+    [toolbar setBackgroundColor:[CPColor colorWithPatternImage:bg]];
+    
+    // Compose button...
+    var composeImage = [[CPImage alloc] initWithContentsOfFile:[[CPBundle mainBundle] pathForResource:"SmallCompose.png"] size:CGSizeMake(14, 13)];
+    var composeImageActive = [[CPImage alloc] initWithContentsOfFile:[[CPBundle mainBundle] pathForResource:"SmallComposeActive.png"] size:CGSizeMake(14, 13)];
+    
+    var composeButton = [[CPButton alloc] initWithFrame:CGRectMake(9, 6, 14, 13)];
+    [composeButton setBordered:NO];
+    [composeButton setImage:composeImage];
+    [composeButton setAlternateImage:composeImageActive];
+    [composeButton setTarget:self];
+    [composeButton setAction:@selector(newTweet:)];
+    
+    [toolbar addSubview:composeButton];
+    [contentView addSubview:toolbar];
 
     [theWindow orderFront:self];
 }
 
 - (void)newTweet:(id)sender
 {
-	var tweetWindow = [[NewTweetWindow alloc] initWithTweetReply:""];
+    var tweetWindow = [[NewTweetWindow alloc] initWithTweetReply:""];
     [tweetWindow orderFront:self];
 }
 

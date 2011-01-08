@@ -6,8 +6,8 @@
 - (id)initWithTweetReply:(JSObject)aTweet
 {
     self = [super initWithContentRect:CGRectMake(100, 100, 400, 135) styleMask:CPTitledWindowMask|CPClosableWindowMask|CPMiniaturizableWindowMask];
-	[self center];
-	
+    [self center];
+    
     if (self)
     {
 

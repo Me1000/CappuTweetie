@@ -188,17 +188,17 @@
 {
     stringValue = aValue;
 
-	var style = [
-		'text-decoration: none',
-		'padding: 2px'
-	];
-	
-	var prefixes = ' -webkit- -moz-'.split(' ');
-	for(var i = 0, len = prefixes.length; i < len; i++) {
-		style.push(prefixes[i] + 'border-radius: 4px')
-	}
-	
-	style = style.join(';');
+    var style = [
+        'text-decoration: none',
+        'padding: 2px'
+    ];
+    
+    var prefixes = ' -webkit- -moz-'.split(' ');
+    for(var i = 0, len = prefixes.length; i < len; i++) {
+        style.push(prefixes[i] + 'border-radius: 4px')
+    }
+    
+    style = style.join(';');
 
     //replace hashes
     var aValue =  aValue.replace(new RegExp("#([\\w_]+)", "g") ,"<a href='#' style='color:#666;" + style + "' onmousedown='this.style.background = \"#bed2e7\";'>#$1</a>"); 
@@ -243,7 +243,7 @@
     if (self)
     {
         _DOMImageElement.style.borderRadius = "5px";
-		_DOMImageElement.style.webkitBorderRadius = "5px";
+        _DOMImageElement.style.webkitBorderRadius = "5px";
         _DOMImageElement.style.mozBorderRadius = "5px";
     }
 
@@ -257,7 +257,7 @@
     if (self)
     {
         _DOMImageElement.style.borderRadius = "5px";
-		_DOMImageElement.style.webkitBorderRadius = "5px";
+        _DOMImageElement.style.webkitBorderRadius = "5px";
         _DOMImageElement.style.mozBorderRadius = "5px";
     }
 

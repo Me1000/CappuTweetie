@@ -2,6 +2,6 @@
 
 @implementation TwitterAccount : CPObject
 {
-	CPString username @accessors;
-	CPString password @accessors;
+    CPString username @accessors;
+    CPString password @accessors;
 }
