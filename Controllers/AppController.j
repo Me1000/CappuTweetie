@@ -67,10 +67,9 @@
     
     // Custom scrolling....
     var newScroller = [[TweetScroller alloc] initWithFrame:CGRectMake(0,0,11,100)];
-    [tweetScrollView setVerticalScroller:newScroller];
-
-    [tweetScrollView setDocumentView:tweetTable];
     [tweetScrollView setHasHorizontalScroller:NO];
+    [tweetScrollView setVerticalScroller:newScroller];
+    [tweetScrollView setDocumentView:tweetTable];
 
     [contentView addSubview:tweetScrollView];
     
@@ -146,7 +145,7 @@
     [cachedTextField setStringValue:[tweetController contentArray][aRow].text];
     [cachedTextField sizeToFit];
 
-    return [cachedTextField frame].size.height + 35;
+    return MAX(65, [cachedTextField frame].size.height + 35);
 }
 
 - (void)didDoubleClick:(id)sender
