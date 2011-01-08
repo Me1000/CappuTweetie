@@ -9,7 +9,7 @@
 @import <Foundation/Foundation.j>
 @import <AppKit/AppKit.j>
 
-@import "AppController.j"
+@import "Controllers/AppController.j"
 
 
 function main(args, namedArgs)
