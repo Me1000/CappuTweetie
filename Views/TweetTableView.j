@@ -31,37 +31,45 @@
 {
     isLoading = aFlag;
 
-    [self setNeedsLayout];
+    if (isLoading)
+    {
+        [dot removeFromSuperview];
+        [self addSubview:spinny];
+    }
+    else
+    {
+        [spinny removeFromSuperview];
+        [self addSubview:dot];
+    }
+}
+
+- (void)tile
+{
+    [super tile];
+
+    var rect = [self rectOfRow:[self numberOfRows] - 1],
+        origin = rect.origin;
+
+    origin.x = rect.size.width / 2;
+
+    if (!origin.y) // rows === 0
+        origin = CGPointMake([self bounds].size.width/2, 10);
+    else // resize to make room
+        [self setFrameSize:CGSizeMake(rect.size.width, rect.size.height + origin.y + 70)];
+
+    //set the position of our indicators
+    [spinny setFrameOrigin:CGPointMake(origin.x - 32, rect.size.height + origin.y)];
+    [dot setFrameOrigin:CGPointMake(origin.x - 2, rect.size.height + origin.y + 30)];
 }
 
 - (void)layoutSubviews
 {
     [super layoutSubviews];
 
-    var rows = [self numberOfRows],
-        rect = [self rectOfRow:rows - 1],
-        origin = rect.origin;
+    var position = CGRectGetMaxY([self visibleRect]);
 
-    origin.x = rect.size.width / 2;
-    origin.y = origin.y + rect.size.height;
-
-    // resize to make room
-    [self setFrameSize:CGSizeMake(rect.size.width, rect.origin.y + 70)];
-
-    if (isLoading) // && numberOfRows > 0
-    {
-        //show the spinny
-        [dot removeFromSuperview];
-        [spinny setFrameOrigin:CGPointMake(origin.x - 32, origin.y)];
-        [self addSubview:spinny];
-    }
-    else
-    {
-        // show a dot
-        [spinny removeFromSuperview];
-        [dot setFrameOrigin:CGPointMake(origin.x - 2, origin.y + 30)];
-        [self addSubview:dot];
-    }
+    if (position > [self bounds].size.height - 100)
+        [[self delegate] loadMoreTweets];
 }
 
 - (void)highlightSelectionInClipRect:(CGRect)aRect

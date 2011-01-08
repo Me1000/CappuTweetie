@@ -14,6 +14,9 @@
         {
             var data = JSON.parse(getData.responseText());
             [[[CPApp delegate] tweetController] setContent:data];
+
+            // FIX ME: this is terrible
+            [[CPApp delegate].tweetTable setIsLoading:NO];
         }
 
         [[CPRunLoop currentRunLoop] performSelectors];

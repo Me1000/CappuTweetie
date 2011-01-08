@@ -100,6 +100,11 @@
     [tweetWindow orderFront:self];
 }
 
+- (void)loadMoreTweets
+{
+    //alert("LOAD MOAR");
+}
+
 - (CPMenu)tableView:(CPTableView)aTableView menuForTableColumn:(CPTableColumn)aColumn row:(int)aRow
 {
     var menuItems = ["Reply...", "Retweet...", "Quote Tweet...", "Copy Link to Tweet", CPNotFound, "Direct Message...", CPNotFound, "Mark As Favorite", CPNotFound, "Open in Browser"],
