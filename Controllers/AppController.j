@@ -49,6 +49,8 @@
     tweetTable = [[TweetTableView alloc] initWithFrame:CGRectMakeZero()];
     [tweetTable setDelegate:self];
     [tweetTable setBackgroundColor:bgColor];
+    [tweetTable setDoubleAction:@selector(didDoubleClick:)];
+    [tweetTable setTarget:self];
 
     // Load tweets...
     tweetController = [[CPArrayController alloc] init];
@@ -73,15 +75,16 @@
     [contentView addSubview:tweetScrollView];
     
     // Bottom toolbar
-    var toolbar = [[CPView alloc] initWithFrame:CGRectMake(0, 562, 405, 23)];
-    var bg = [[CPImage alloc] initWithContentsOfFile:[[CPBundle mainBundle] pathForResource:"toolbar.png"]];
+    var toolbar = [[CPView alloc] initWithFrame:CGRectMake(0, 562, 405, 23)],
+        bg = [[CPImage alloc] initWithContentsOfFile:[[CPBundle mainBundle] pathForResource:"toolbar.png"]];
+
     [toolbar setBackgroundColor:[CPColor colorWithPatternImage:bg]];
     
     // Compose button...
-    var composeImage = [[CPImage alloc] initWithContentsOfFile:[[CPBundle mainBundle] pathForResource:"SmallCompose.png"] size:CGSizeMake(14, 13)];
-    var composeImageActive = [[CPImage alloc] initWithContentsOfFile:[[CPBundle mainBundle] pathForResource:"SmallComposeActive.png"] size:CGSizeMake(14, 13)];
-    
-    var composeButton = [[CPButton alloc] initWithFrame:CGRectMake(9, 6, 14, 13)];
+    var composeImage = [[CPImage alloc] initWithContentsOfFile:[[CPBundle mainBundle] pathForResource:"SmallCompose.png"] size:CGSizeMake(14, 13)],
+        composeImageActive = [[CPImage alloc] initWithContentsOfFile:[[CPBundle mainBundle] pathForResource:"SmallComposeActive.png"] size:CGSizeMake(14, 13)],
+        composeButton = [[CPButton alloc] initWithFrame:CGRectMake(9, 6, 14, 13)];
+
     [composeButton setBordered:NO];
     [composeButton setImage:composeImage];
     [composeButton setAlternateImage:composeImageActive];
@@ -144,6 +147,11 @@
     [cachedTextField sizeToFit];
 
     return [cachedTextField frame].size.height + 35;
+}
+
+- (void)didDoubleClick:(id)sender
+{
+    console.log(sender);
 }
 
 @end
