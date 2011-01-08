@@ -57,7 +57,7 @@
     else // resize to make room
         [self setFrameSize:CGSizeMake(rect.size.width, rect.size.height + origin.y + 70)];
 
-    //set the position of our indicators
+    // set the position of our indicators
     [spinny setFrameOrigin:CGPointMake(origin.x - 32, rect.size.height + origin.y)];
     [dot setFrameOrigin:CGPointMake(origin.x - 2, rect.size.height + origin.y + 30)];
 }
@@ -78,14 +78,14 @@
 	if(selectedRow == -1) return;
 	
 	var context = [[CPGraphicsContext currentContext] graphicsPort],
-	    rgb = CGColorSpaceCreateDeviceRGB();
-	    startColor = CGColorCreate(rgb, [241/255, 241/255, 241/255, 1]);
-	    endColor = CGColorCreate(rgb, [241/255, 241/255, 241/255, 0]);
+	    rgb = CGColorSpaceCreateDeviceRGB(),
+	    startColor = CGColorCreate(rgb, [241/255, 241/255, 241/255, 1]),
+	    endColor = CGColorCreate(rgb, [241/255, 241/255, 241/255, 0]),
 	    gradient = CGGradientCreateWithColors(rgb, [startColor, endColor], [0, 1]);
 	
 	var drawingRect = [self rectOfRow:selectedRow],
-	    midY = CGRectGetMidY(drawingRect);
-	    startPoint = CGPointMake(CGRectGetMinX(drawingRect), midY);
+	    midY = CGRectGetMidY(drawingRect),
+	    startPoint = CGPointMake(CGRectGetMinX(drawingRect), midY),
 	    endPoint = CGPointMake(CGRectGetMaxX(drawingRect), midY);
 	
 	CGContextDrawLinearGradient(context, gradient, startPoint, endPoint, 0);
