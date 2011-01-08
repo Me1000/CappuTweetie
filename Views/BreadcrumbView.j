@@ -2,6 +2,7 @@
 {
     CPArray items;
     CPView  container;
+    CPImageView gradient;
 }
 
 - (id)initWithFrame:(CGRect)aFrame
@@ -14,8 +15,15 @@
         container = [[CPView alloc] initWithFrame:CGRectMake(0, 0, aFrame.size.width, aFrame.size.height)];
 
         [self addSubview:container];
+        
+        var gradientImage = [[CPImage alloc] initWithContentsOfFile:[[CPBundle mainBundle] pathForResource:"windowToolbarGradient.png"] size:CGSizeMake(25,27)];
+        gradient = [[CPImageView alloc] initWithFrame:CPRectMake(0, 0, 25, 27)];
+            
+        [gradient setImage:gradientImage];
+        [gradient setHitTests:NO];
+        [self addSubview:gradient];
 
-        var windowBG = [[CPImage alloc] initWithContentsOfFile:[[CPBundle mainBundle] pathForResource:"windowToolbar3.png"] size:CGSizeMake(25,27)]
+        var windowBG = [[CPImage alloc] initWithContentsOfFile:[[CPBundle mainBundle] pathForResource:"windowToolbar.png"] size:CGSizeMake(25,27)];
         [self setBackgroundColor:[CPColor colorWithPatternImage:windowBG]];
     }
     
@@ -52,17 +60,14 @@
 {
     // we're actually going to lay this out in reverse order... since the oldest items get cut off
 
-
-    var i = 0,
-        c = items.length,
-        x = 10;
-
-    for (; i < c; i++)
+    var x = 10;
+    for (var i = 0, c = items.length; i < c; i++)
     {
         var item = items[i];
-
+        
         [item setFrameOrigin:CGPointMake(x, 0)];
         x += CGRectGetWidth([item frame]) + 10;
+        
         [container addSubview:item];
     }
 
@@ -74,10 +79,12 @@
     {
         var newX = width - x - 40;
         [container setFrameOrigin:CGPointMake(newX, 0)];
+        [gradient setHidden:NO];
     }
     else
     {
         [container setFrameOrigin:CGPointMakeZero()];
+        [gradient setHidden:YES];
     }
 
 }
