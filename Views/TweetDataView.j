@@ -38,7 +38,7 @@
         [replyButton setAlternateImage:altImage];
         [replyButton setAutoresizingMask:CPViewMinXMargin];
         
-        authorAvatarView = [[RoundedImageView alloc] initWithFrame:CGRectMake(5, 5, 50, 50)];
+        authorAvatarView = [[RoundedImageView alloc] initWithFrame:CGRectMake(5, 5, 55, 55)];
 
         var tweetBackground = [[CPView alloc] initWithFrame:CGRectMake(60, 2, aFrame.size.width - 62, aFrame.size.height - 4)];
 
@@ -235,32 +235,64 @@
 
 @end
 
-@implementation RoundedImageView : CPImageView
-- (id)initWithFrame:(CGRect)aRect
+@implementation RoundedImageView : CPView
 {
-    self = [super initWithFrame:aRect];
-
-    if (self)
-    {
-        _DOMImageElement.style.borderRadius = "5px";
-        _DOMImageElement.style.webkitBorderRadius = "5px";
-        _DOMImageElement.style.mozBorderRadius = "5px";
-    }
-
-    return self;
+    CPImage image @accessors;
 }
 
-- (id)initWithCoder:(CPCoder)aCoder
+- (void)setImage:(CPImage)anImage
 {
-    self = [super initWithCoder:aCoder];
-
-    if (self)
+    // Mostly taken from CPImageView
+    var defaultCenter = [CPNotificationCenter defaultCenter];
+    
+    if(image)
+        [defaultCenter removeObserver:self name:CPImageDidLoadNotification object:image];
+    
+    image = anImage;
+    
+    var size = [image size];
+    if (size && size.width === -1 && size.height === -1)
     {
-        _DOMImageElement.style.borderRadius = "5px";
-        _DOMImageElement.style.webkitBorderRadius = "5px";
-        _DOMImageElement.style.mozBorderRadius = "5px";
+        [defaultCenter addObserver:self selector:@selector(imageDidLoad:) name:CPImageDidLoadNotification object:image];
     }
-
-    return self;
+    else
+    {
+        [self setNeedsDisplay:YES];
+    }
 }
+
+- (void)imageDidLoad:(CPNotification)aNotification
+{
+    [self setNeedsDisplay:YES];
+}
+
+- (void)drawRect:(CPRect)aRect
+{
+    if(!image) return;
+    var context = [[CPGraphicsContext currentContext] graphicsPort],
+        rect = CGRectMake(2, 0, 50, 50),
+        path = CGPathWithRoundedRectangleInRect(rect, 5, 5, YES, YES, YES, YES),
+        // slightly larger radius to make sure we don't bleed out from under the image at the corners...
+        shadowPath = CGPathWithRoundedRectangleInRect(rect, 6, 6, YES, YES, YES, YES),
+        shadowColor = [CPColor colorWithRed:0 green:0 blue:0 alpha:0.4];
+        
+    CGContextSetShadowWithColor(context, CGSizeMake(0, 1), 2, shadowColor);
+    CGContextAddPath(context, shadowPath);
+    CGContextFillPath(context);
+    
+    CGContextAddPath(context, path);
+    CGContextClip(context);
+    CGContextDrawImage(context, rect, image);
+}
+
+- (void)mouseEntered:(CPEvent)anEvent
+{
+    [[CPCursor pointingHandCursor] set];
+}
+
+- (void)mouseExited:(CPEvent)anEvent
+{
+    [[CPCursor arrowCursor] set];
+}
+
 @end
