@@ -238,6 +238,8 @@
 @implementation RoundedImageView : CPView
 {
     CPImage image @accessors;
+    BOOL loaded;
+    JSObject roundedImage;
 }
 
 - (void)setImage:(CPImage)anImage
@@ -253,36 +255,48 @@
     var size = [image size];
     if (size && size.width === -1 && size.height === -1)
     {
+        loaded = NO;
         [defaultCenter addObserver:self selector:@selector(imageDidLoad:) name:CPImageDidLoadNotification object:image];
     }
     else
     {
+        loaded = YES;
+        [self drawRoundedImage];
         [self setNeedsDisplay:YES];
     }
 }
 
+- (void)drawRoundedImage
+{
+    var rect = CGRectMake(0, 0, 50, 50),
+        path = CGPathWithRoundedRectangleInRect(rect, 5, 5, YES, YES, YES, YES),
+        context = CGBitmapGraphicsContextCreate();
+        
+    context.DOMElement.width = context.DOMElement.height = 50;
+    CGContextAddPath(context, path);
+    CGContextClip(context);
+    CGContextDrawImage(context, rect, image);
+    
+    // hack attack for CGContextDrawImage!
+    roundedImage = { _image: context.DOMElement };
+}
+
 - (void)imageDidLoad:(CPNotification)aNotification
 {
+    loaded = YES;
+    [self drawRoundedImage];
     [self setNeedsDisplay:YES];
 }
 
 - (void)drawRect:(CPRect)aRect
 {
-    if(!image) return;
+    if(!image || !loaded) return;
+    
     var context = [[CPGraphicsContext currentContext] graphicsPort],
-        rect = CGRectMake(2, 0, 50, 50),
-        path = CGPathWithRoundedRectangleInRect(rect, 5, 5, YES, YES, YES, YES),
-        // slightly larger radius to make sure we don't bleed out from under the image at the corners...
-        shadowPath = CGPathWithRoundedRectangleInRect(rect, 6, 6, YES, YES, YES, YES),
         shadowColor = [CPColor colorWithRed:0 green:0 blue:0 alpha:0.4];
         
     CGContextSetShadowWithColor(context, CGSizeMake(0, 1), 2, shadowColor);
-    CGContextAddPath(context, shadowPath);
-    CGContextFillPath(context);
-    
-    CGContextAddPath(context, path);
-    CGContextClip(context);
-    CGContextDrawImage(context, rect, image);
+    CGContextDrawImage(context, CGRectMake(2, 0, 50, 50), roundedImage);
 }
 
 - (void)mouseEntered:(CPEvent)anEvent
