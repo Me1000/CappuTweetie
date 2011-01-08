@@ -1,7 +1,6 @@
 @implementation BreadcrumbView : CPView
 {
     CPArray items;
-    int maxX;
 }
 
 - (id)initWithFrame:(CGRect)aFrame
@@ -10,7 +9,6 @@
     
     if(self)
     {
-        maxX = 60;
         items = [[CPArray alloc] init];
         
         var windowBG = [[CPImage alloc] initWithContentsOfFile:[[CPBundle mainBundle] pathForResource:"windowToolbar3.png"] size:CGSizeMake(25,27)]
@@ -22,8 +20,8 @@
 
 - (void)addItem:(CPString)aTitle
 {
+    var maxX = [items count] > 0 ? CGRectGetMaxX([[items lastObject] frame]) : 60
     var item = [[BreadcrumbItem alloc] initWithFrame:CGRectMake(maxX + 8, 0, 0, 26) title:aTitle owner:self];
-    maxX = CGRectGetMaxX([item frame]);
     [self addSubview:item];
     [items addObject:item];
 }
