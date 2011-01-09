@@ -244,15 +244,10 @@
 
 - (void)setImage:(CPImage)anImage
 {
-    // Mostly taken from CPImageView
-    var defaultCenter = [CPNotificationCenter defaultCenter];
-    
-    if(image)
-        [defaultCenter removeObserver:self name:CPImageDidLoadNotification object:image];
-    
     image = anImage;
     
     var size = [image size];
+<<<<<<< HEAD
     if (size && size.width === -1 && size.height === -1)
     {
         loaded = NO;
@@ -262,8 +257,12 @@
     {
         loaded = YES;
         [self drawRoundedImage];
+=======
+    [image setDelegate:self];
+
+    if (size.width !== CPNotFound && size.height !== CPNotFound)
+>>>>>>> 033399cfcb2d31c5ae0b5013dac17349911e58a0
         [self setNeedsDisplay:YES];
-    }
 }
 
 - (void)drawRoundedImage
@@ -296,7 +295,23 @@
         shadowColor = [CPColor colorWithRed:0 green:0 blue:0 alpha:0.4];
         
     CGContextSetShadowWithColor(context, CGSizeMake(0, 1), 2, shadowColor);
+<<<<<<< HEAD
     CGContextDrawImage(context, CGRectMake(2, 0, 50, 50), roundedImage);
+=======
+    CGContextAddPath(context, shadowPath);
+    CGContextFillPath(context);
+    
+    CGContextAddPath(context, path);
+    CGContextClip(context);
+
+    if ([image loadStatus] === CPImageLoadStatusCompleted)
+        CGContextDrawImage(context, rect, image);
+}
+
+- (void)imageDidLoad:(id)sender
+{
+    [self setNeedsDisplay:YES];
+>>>>>>> 033399cfcb2d31c5ae0b5013dac17349911e58a0
 }
 
 - (void)mouseEntered:(CPEvent)anEvent
