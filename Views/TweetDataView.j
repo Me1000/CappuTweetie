@@ -271,7 +271,7 @@ RLCGImage = function(/*CPString*/url, imageview)
 
         var data = context2.canvas.toDataURL("image/png"),
             newImage2 = [[CPImage alloc] initWithContentsOfFile:data];
-            debugger;
+
         cachedAvatars[url] = newImage2;
 
         [imageview setImage:newImage2];
