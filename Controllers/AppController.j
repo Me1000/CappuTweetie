@@ -8,6 +8,7 @@
 @import "../Views/BreadcrumbView.j"
 @import "../Views/TweetScroller.j"
 @import "../Views/TweetTableView.j"
+@import "../Views/PreferencesWindow.j"
 
 @implementation AppController : CPObject
 {
@@ -82,7 +83,8 @@
     // Compose button...
     var composeImage = [[CPImage alloc] initWithContentsOfFile:[[CPBundle mainBundle] pathForResource:"SmallCompose.png"] size:CGSizeMake(14, 13)],
         composeImageActive = [[CPImage alloc] initWithContentsOfFile:[[CPBundle mainBundle] pathForResource:"SmallComposeActive.png"] size:CGSizeMake(14, 13)],
-        composeButton = [[CPButton alloc] initWithFrame:CGRectMake(9, 6, 14, 13)];
+        composeButton = [[CPButton alloc] initWithFrame:CGRectMake(9, 6, 14, 13)],
+        preferencesButton = [[CPButton alloc] initWithFrame:CGRectMake(29, 6, 14, 13)];
 
     [composeButton setBordered:NO];
     [composeButton setImage:composeImage];
@@ -90,7 +92,12 @@
     [composeButton setTarget:self];
     [composeButton setAction:@selector(newTweet:)];
     
+    [preferencesButton setTarget:self];
+    [preferencesButton setAction:@selector(showPreferencesWindow:)];
+    
     [toolbar addSubview:composeButton];
+    [toolbar addSubview:preferencesButton];
+    
     [contentView addSubview:toolbar];
 
     [theWindow orderFront:self];
@@ -100,6 +107,12 @@
 {
     var tweetWindow = [[NewTweetWindow alloc] initWithTweetReply:""];
     [tweetWindow orderFront:self];
+}
+
+- (void)showPreferencesWindow:(id)sender
+{
+	var preferencesWindow = [[PreferencesWindow alloc] init];
+	[preferencesWindow orderFront:self];
 }
 
 - (void)loadMoreTweets
