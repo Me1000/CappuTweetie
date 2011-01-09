@@ -154,6 +154,8 @@ var cachedAvatars = {};
     DOMElement    textContainer;
 
     CPString      stringValue;
+
+    id            downElement;
 }
 
 - (id)initWithFrame:(CGRect)aFrame
@@ -178,6 +180,8 @@ var cachedAvatars = {};
 {
     if (anEvent.target.tagName !== "A")
         [super mouseDown:anEvent];
+    else
+        downElement = anEvent.target;
 }
 
 - (void)mouseUp:(CPEvent)anEvent
@@ -189,6 +193,11 @@ var cachedAvatars = {};
         all[count].style.background = "transparent";
 
     [super mouseUp:anEvent];
+
+
+    // EWW : this is needed because NH has a terrible scoping problem.
+    if (downElement && anEvent.target === downElement && downElement.rel)
+        eval(downElement.rel);
 }
 
 - (void)setStringValue:(CPString)aValue
@@ -214,7 +223,7 @@ var cachedAvatars = {};
     html = aValue.replace(new RegExp("@([\\w_]+)", "g"), "<a href=\"#\" style=\"color:#2c93d5;" + style + "\" onmousedown='this.style.background = \"#bed2e7\";'>@$1</a>");
 
     var linkReplace = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
-    html =  html.replace(linkReplace, "<a href='#' onclick=\" console.log(parent); OPEN_LINK('$1');\" style='color:#2c93d5;" + style + "' onmousedown='this.style.background = \"#bed2e7\";'>$1</a>"); 
+    html =  html.replace(linkReplace, "<a href='#' rel=\"OPEN_LINK('$1');\" style='color:#2c93d5;" + style + "' onmousedown='this.style.background = \"#bed2e7\";'>$1</a>"); 
 
     textContainer.innerHTML = html;
 }
