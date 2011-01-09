@@ -36,7 +36,7 @@
 
         tweetsButton   = [[SidebarButton alloc] initWithFrame:CGRectMake(0, 0, 32, 31)];
         replyButton    = [[SidebarButton alloc] initWithFrame:CGRectMake(0, 42, 33, 31)];
-        messagesButton = [[SidebarButton alloc] initWithFrame:CGRectMake(0, 81, 29, 31)];
+        messagesButton = [[SidebarButton alloc] initWithFrame:CGRectMake(0, 82, 29, 30)];
         searchButton   = [[SidebarButton alloc] initWithFrame:CGRectMake(0, 120, 25, 31)];
 
         var image = [[CPImage alloc] initWithContentsOfFile:[[CPBundle mainBundle] pathForResource:"Sidebar/SideTweets.png"] size:CGSizeMake(32, 30)];
