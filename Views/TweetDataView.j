@@ -1,5 +1,7 @@
 @import "../RelativeDateFormatter.j"
 
+var cachedAvatars = {};
+
 @implementation TweetDataView : CPView
 {
     CPTextField authorName;
@@ -38,7 +40,7 @@
         [replyButton setAlternateImage:altImage];
         [replyButton setAutoresizingMask:CPViewMinXMargin];
         
-        authorAvatarView = [[RoundedImageView alloc] initWithFrame:CGRectMake(5, 5, 55, 55)];
+        authorAvatarView = [[CPImageView alloc] initWithFrame:CGRectMake(6, 6, 55, 55)];
 
         var tweetBackground = [[CPView alloc] initWithFrame:CGRectMake(60, 2, aFrame.size.width - 62, aFrame.size.height - 4)];
 
@@ -100,8 +102,13 @@
 
     [tweetText setFrame:frame];
 
-    var userImage = [[CPImage alloc] initWithContentsOfFile:aTweet.user.profile_image_url size:CGSizeMake(50,50)];
-    [authorAvatarView setImage:userImage];
+//    var userImage = [[CPImage alloc] initWithContentsOfFile:aTweet.user.profile_image_url size:CGSizeMake(50,50)];
+
+    // async and stuff...
+    [authorAvatarView setImage:nil];
+    RLCGImage(aTweet.user.profile_image_url, authorAvatarView);
+
+  //  [authorAvatarView setImage:userImage];
 }
 
 - (id)objectValue
@@ -147,6 +154,8 @@
     DOMElement    textContainer;
 
     CPString      stringValue;
+
+    id            downElement;
 }
 
 - (id)initWithFrame:(CGRect)aFrame
@@ -171,6 +180,8 @@
 {
     if (anEvent.target.tagName !== "A")
         [super mouseDown:anEvent];
+    else
+        downElement = anEvent.target;
 }
 
 - (void)mouseUp:(CPEvent)anEvent
@@ -182,6 +193,11 @@
         all[count].style.background = "transparent";
 
     [super mouseUp:anEvent];
+
+
+    // EWW : this is needed because NH has a terrible scoping problem.
+    if (downElement && anEvent.target === downElement && downElement.rel)
+        eval(downElement.rel);
 }
 
 - (void)setStringValue:(CPString)aValue
@@ -207,7 +223,7 @@
     html = aValue.replace(new RegExp("@([\\w_]+)", "g"), "<a href=\"#\" style=\"color:#2c93d5;" + style + "\" onmousedown='this.style.background = \"#bed2e7\";'>@$1</a>");
 
     var linkReplace = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
-    html =  html.replace(linkReplace, "<a href='#' onclick=\"OPEN_LINK('$1')\" style='color:#2c93d5;" + style + "' onmousedown='this.style.background = \"#bed2e7\";'>$1</a>"); 
+    html =  html.replace(linkReplace, "<a href='#' rel=\"OPEN_LINK('$1');\" style='color:#2c93d5;" + style + "' onmousedown='this.style.background = \"#bed2e7\";'>$1</a>"); 
 
     textContainer.innerHTML = html;
 }
@@ -235,70 +251,40 @@
 
 @end
 
-@implementation RoundedImageView : CPView
+// this method creates a nice rounded shadowed image then caches it... :D
+RLCGImage = function(/*CPString*/url, imageview)
 {
-    CPImage image @accessors;
-    BOOL loaded;
-    JSObject roundedImage;
+    if (cachedAvatars[url])
+        return [imageview setImage:cachedAvatars[url]];
+
+    var newImage = new Image();
+
+    newImage.onload = function ()
+    {
+        var rect = CGRectMake(0, 0, 50, 50),
+            path = CGPathWithRoundedRectangleInRect(rect, 5, 5, YES, YES, YES, YES),
+            context = CGBitmapGraphicsContextCreate();
+
+        context.DOMElement.width = context.DOMElement.height = 50;
+        CGContextAddPath(context, path);
+        CGContextClip(context);
+        CGContextDrawImage(context, rect, {_image: newImage});
+
+        var shadowColor = [CPColor colorWithRed:0 green:0 blue:0 alpha:0.4];
+
+        var context2 = CGBitmapGraphicsContextCreate();
+        context2.DOMElement.width = context2.DOMElement.height = 55;
+
+        CGContextSetShadowWithColor(context2, CGSizeMake(0, 1), 2, shadowColor);
+        CGContextDrawImage(context2, CGRectMake(0, 0, 50, 50), { _image: context.DOMElement });   
+
+        var data = context2.canvas.toDataURL("image/png"),
+            newImage2 = [[CPImage alloc] initWithContentsOfFile:data];
+
+        cachedAvatars[url] = newImage2;
+
+        [imageview setImage:newImage2];
+    }
+
+    newImage.src = url;
 }
-
-- (void)setImage:(CPImage)anImage
-{
-    image = anImage;
-    
-    var size = [image size];
-    [image setDelegate:self];
-
-    if (size.width !== CPNotFound && size.height !== CPNotFound)
-        [self setNeedsDisplay:YES];
-}
-
-- (void)imageDidLoad:(CPNotification)aNotification
-{
-    [self setNeedsDisplay:YES];
-}
-
-- (void)drawRoundedImage
-{
-    var rect = CGRectMake(0, 0, 50, 50),
-        path = CGPathWithRoundedRectangleInRect(rect, 5, 5, YES, YES, YES, YES),
-        context = CGBitmapGraphicsContextCreate();
-        
-    context.DOMElement.width = context.DOMElement.height = 50;
-    CGContextAddPath(context, path);
-    CGContextClip(context);
-    CGContextDrawImage(context, rect, image);
-    
-    // hack attack for CGContextDrawImage!
-    roundedImage = { _image: context.DOMElement };
-}
-
-- (void)imageDidLoad:(id)sender
-{
-    loaded = YES;
-    [self drawRoundedImage];
-    [self setNeedsDisplay:YES];
-}
-
-- (void)drawRect:(CPRect)aRect
-{
-    if(!image || [image loadStatus] !== CPImageLoadStatusCompleted) return;
-    
-    var context = [[CPGraphicsContext currentContext] graphicsPort],
-        shadowColor = [CPColor colorWithRed:0 green:0 blue:0 alpha:0.4];
-        
-    CGContextSetShadowWithColor(context, CGSizeMake(0, 1), 2, shadowColor);
-    CGContextDrawImage(context, CGRectMake(2, 0, 50, 50), roundedImage);
-}
-
-- (void)mouseEntered:(CPEvent)anEvent
-{
-    [[CPCursor pointingHandCursor] set];
-}
-
-- (void)mouseExited:(CPEvent)anEvent
-{
-    [[CPCursor arrowCursor] set];
-}
-
-@end
