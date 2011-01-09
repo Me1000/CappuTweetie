@@ -19,10 +19,10 @@ var cachedAvatars = {};
 
     if (self)
     {
-        authorName = [[CPTextField alloc] initWithFrame:CGRectMake(75, 5, 100, 20)];
+        authorName = [[CPTextField alloc] initWithFrame:CGRectMake(75, 5, 150, 20)];
         [authorName setFont:[CPFont boldSystemFontOfSize:13]];
         
-        timeSinceTweet = [[CPTextField alloc] initWithFrame:CGRectMake(180, 5, aFrame.size.width - 210, 20)];
+        timeSinceTweet = [[CPTextField alloc] initWithFrame:CGRectMake(225, 5, aFrame.size.width - 255, 20)];
         [timeSinceTweet setFont:[CPFont systemFontOfSize:11]];
         [timeSinceTweet setTextColor:[CPColor grayColor]];
         [timeSinceTweet setAlignment:CPRightTextAlignment];
