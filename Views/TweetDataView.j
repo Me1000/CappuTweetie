@@ -242,23 +242,13 @@
 
 - (void)setImage:(CPImage)anImage
 {
-    // Mostly taken from CPImageView
-    var defaultCenter = [CPNotificationCenter defaultCenter];
-    
-    if(image)
-        [defaultCenter removeObserver:self name:CPImageDidLoadNotification object:image];
-    
     image = anImage;
     
     var size = [image size];
-    if (size && size.width === -1 && size.height === -1)
-    {
-        [defaultCenter addObserver:self selector:@selector(imageDidLoad:) name:CPImageDidLoadNotification object:image];
-    }
-    else
-    {
+    [image setDelegate:self];
+
+    if (size.width !== CPNotFound && size.height !== CPNotFound)
         [self setNeedsDisplay:YES];
-    }
 }
 
 - (void)imageDidLoad:(CPNotification)aNotification
@@ -282,7 +272,14 @@
     
     CGContextAddPath(context, path);
     CGContextClip(context);
-    CGContextDrawImage(context, rect, image);
+
+    if ([image loadStatus] === CPImageLoadStatusCompleted)
+        CGContextDrawImage(context, rect, image);
+}
+
+- (void)imageDidLoad:(id)sender
+{
+    [self setNeedsDisplay:YES];
 }
 
 - (void)mouseEntered:(CPEvent)anEvent
