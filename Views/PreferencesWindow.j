@@ -80,6 +80,23 @@
     }  
     else
     {
+        var username = [[accountsController accounts] objectAtIndex:[accountsTable selectedRow]].username,
+            message = "Are you sure yow want to remove \"" + username + "\"?",
+            alert = [[CPAlert alloc] init];
+        
+        [alert setMessageText:"Remove Account"];
+        [alert setInformativeText:"Are you sure yow want to remove \"" + [[accountsController accounts] objectAtIndex:[accountsTable selectedRow]].username + "\"?"];
+        [alert setDelegate:self];
+        [alert addButtonWithTitle:"Remove"];
+        [alert addButtonWithTitle:"Cancel"];
+        [alert beginSheetModalForWindow:self];
+    }
+}
+
+- (void)alertDidEnd:(CPAlert)anAlert returnCode:(int)returnCode
+{
+    if(returnCode == 0)
+    {
         [accountsController removeAccountAtIndex:[accountsTable selectedRow]];
         [accountsTable reloadData];
     }
