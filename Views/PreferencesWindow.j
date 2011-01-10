@@ -85,7 +85,7 @@
             alert = [[CPAlert alloc] init];
         
         [alert setMessageText:"Remove Account"];
-        [alert setInformativeText:"Are you sure yow want to remove \"" + [[accountsController accounts] objectAtIndex:[accountsTable selectedRow]].username + "\"?"];
+        [alert setInformativeText:message];
         [alert setDelegate:self];
         [alert addButtonWithTitle:"Remove"];
         [alert addButtonWithTitle:"Cancel"];
