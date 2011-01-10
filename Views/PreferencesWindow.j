@@ -81,7 +81,7 @@
     else
     {
         var username = [[accountsController accounts] objectAtIndex:[accountsTable selectedRow]].username,
-            message = "Are you sure yow want to remove \"" + username + "\"?",
+            message = "Are you sure you want to remove \"" + username + "\"?",
             alert = [[CPAlert alloc] init];
         
         [alert setMessageText:"Remove Account"];
