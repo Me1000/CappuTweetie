@@ -10,6 +10,11 @@
 @import "../Views/TweetTableView.j"
 @import "../Views/PreferencesWindow.j"
 
+@import "AccountController.j"
+@import "../Models/TwitterAccount.j"
+
+accountsController = [[AccountController alloc] init];
+
 @implementation AppController : CPObject
 {
     CPScrollView tweetScrollView;
@@ -18,6 +23,7 @@
     CPTextField cachedTextField;
 
     CPArrayController tweetController @accessors;
+    CPWindow preferencesWindow;
 }
 
 - (void)applicationDidFinishLaunching:(CPNotification)aNotification
@@ -29,6 +35,24 @@
     [theWindow _setWindowView:[[TwitterWindow alloc] initWithFrame:[theWindow._windowView frame] styleMask:CPClosableWindowMask|CPMiniaturizableWindowMask]];
     [theWindow setMovableByWindowBackground:YES];
     [contentView setBackgroundColor:bgColor];
+    
+    // Menubar... not sure I like it, but I had to put preferences somewhere...
+    var mainMenu = [[CPMenu alloc] initWithTitle:"main"],
+        menu = [[CPMenu alloc] initWithTitle:"CappuTweetie"];
+        
+    var item = [mainMenu addItemWithTitle:"CappuTweetie" action:nil keyEquivalent:nil];
+    [menu addItemWithTitle:"Preferences..." action:@selector(showPreferencesWindow:) keyEquivalent:","];
+    [mainMenu setSubmenu:menu forItem:item];
+    
+    var item = [mainMenu addItemWithTitle:"File" action:nil keyEquivalent:nil],
+        fileMenu = [[CPMenu alloc] initWithTitle:"File"];
+        
+    [fileMenu addItemWithTitle:"New Tweet..." action:@selector(newTweet:) keyEquivalent:"N"];
+    [mainMenu setSubmenu:fileMenu forItem:item];
+        
+    // set & make visible 
+    [CPApp setMainMenu:mainMenu];
+    [CPMenu setMenuBarVisible:YES]; 
 
     // Breadcrumbs...
     var breadcrumbs = [[BreadcrumbView alloc] initWithFrame:CGRectMake(60,0,345,27)];
@@ -83,24 +107,22 @@
     // Compose button...
     var composeImage = [[CPImage alloc] initWithContentsOfFile:[[CPBundle mainBundle] pathForResource:"SmallCompose.png"] size:CGSizeMake(14, 13)],
         composeImageActive = [[CPImage alloc] initWithContentsOfFile:[[CPBundle mainBundle] pathForResource:"SmallComposeActive.png"] size:CGSizeMake(14, 13)],
-        composeButton = [[CPButton alloc] initWithFrame:CGRectMake(9, 6, 14, 13)],
-        preferencesButton = [[CPButton alloc] initWithFrame:CGRectMake(29, 6, 14, 13)];
+        composeButton = [[CPButton alloc] initWithFrame:CGRectMake(9, 6, 14, 13)];
 
     [composeButton setBordered:NO];
     [composeButton setImage:composeImage];
     [composeButton setAlternateImage:composeImageActive];
     [composeButton setTarget:self];
     [composeButton setAction:@selector(newTweet:)];
-    
-    [preferencesButton setTarget:self];
-    [preferencesButton setAction:@selector(showPreferencesWindow:)];
-    
     [toolbar addSubview:composeButton];
-    [toolbar addSubview:preferencesButton];
     
     [contentView addSubview:toolbar];
-
+    
+    [accountsController addAccount:[TwitterAccount accountWithUsername:"devongovett" password:"password"]];
+    [accountsController addAccount:[TwitterAccount accountWithUsername:"me1000" password:"password"]];
     [theWindow orderFront:self];
+    
+    preferencesWindow = [[PreferencesWindow alloc] init];
 }
 
 - (void)newTweet:(id)sender
@@ -111,7 +133,6 @@
 
 - (void)showPreferencesWindow:(id)sender
 {
-	var preferencesWindow = [[PreferencesWindow alloc] init];
 	[preferencesWindow orderFront:self];
 }
 

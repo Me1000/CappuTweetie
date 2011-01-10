@@ -78,6 +78,7 @@
 - (void)addAccount:(TwitterAccount)anAccount
 {
     [accounts addObject:anAccount];
+    // TODO: this should use the AccountController to store its data instead...
 
     // fix me: this image should be rounded by default
     var newAvatarView = [[SidebarButton alloc] initWithFrame:CGRectMake(4,0,48,48)];
