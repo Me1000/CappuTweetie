@@ -2,6 +2,12 @@
 @import "../Views/TweetDataView.j"
 @import "TwitterAPIController.j"
 @import <Foundation/CPDate.j>
+@import <AppKit/CPScroller.j>
+@import <AppKit/CPTableView.j>
+@import <AppKit/CPScrollView.j>
+@import <Foundation/CPTimer.j>
+@import <AppKit/CPSegmentedControl.j>
+@import <AppKit/CPButtonBar.j>
 @import "../Views/NewTweetWindow.j"
 @import "../Views/TwitterWindow.j"
 @import "../Views/SidebarView.j"
