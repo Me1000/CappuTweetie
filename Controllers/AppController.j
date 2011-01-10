@@ -43,6 +43,10 @@ accountsController = [[AccountController alloc] init];
     var item = [mainMenu addItemWithTitle:"CappuTweetie" action:nil keyEquivalent:nil];
     [menu addItemWithTitle:"Preferences..." action:@selector(showPreferencesWindow:) keyEquivalent:","];
     [mainMenu setSubmenu:menu forItem:item];
+
+    var item = [[CPMenuItem alloc] initWithTitle:"Quit CappuTweetie" action:@selector(terminate:) keyEquivalent:"q"];
+    [item setTarget:CPApp];
+    [menu addItem:item];
     
     var item = [mainMenu addItemWithTitle:"File" action:nil keyEquivalent:nil],
         fileMenu = [[CPMenu alloc] initWithTitle:"File"];
