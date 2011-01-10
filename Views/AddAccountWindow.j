@@ -64,6 +64,7 @@
 
 - (void)addAccount:(id)sender
 {
+    // TODO: actually perform twitter authentication
     [self hideSheet:nil];
     [delegate addAccountWithUsername:[usernameField stringValue] password:[passwordField stringValue]];
 }
