@@ -24,7 +24,7 @@
     var usernameLabel = [[CPTextField alloc] initWithFrame:CGRectMake(50, 20, 70, 20)];
     [usernameLabel setStringValue:"Username:"];
     
-    usernameField = [[CPTextField alloc] initWithFrame:CGRectMake(115, 14, 200, 30)];
+    usernameField = [[CPTextField alloc] initWithFrame:CGRectMake(115, 14, 200, 28)];
     [usernameField setEditable:YES];
     [usernameField setBezeled:YES];
     [usernameField setDelegate:self];
@@ -32,7 +32,7 @@
     var passwordLabel = [[CPTextField alloc] initWithFrame:CGRectMake(53, 55, 70, 20)];
     [passwordLabel setStringValue:"Password:"];
     
-    passwordField = [[CPTextField alloc] initWithFrame:CGRectMake(115, 49, 200, 30)];
+    passwordField = [[CPTextField alloc] initWithFrame:CGRectMake(115, 49, 200, 28)];
     [passwordField setEditable:YES];
     [passwordField setBezeled:YES];
     [passwordField setSecure:YES];
