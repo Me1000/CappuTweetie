@@ -106,6 +106,7 @@
     {
         [accountsController removeAccountAtIndex:[accountsTable selectedRow]];
         [accountsTable reloadData];
+        [segControl setEnabled:NO forSegment:1];
     }
 }
 
@@ -143,7 +144,7 @@
 - (void)tableViewSelectionDidChange:(CPNotification)aNotification
 {
     var enabled = [accountsTable selectedRow] != CPNotFound;
-    [segControl setEnabled:enabled forSegment:1];        
+    [segControl setEnabled:enabled forSegment:1];
 }
 
 // drag and drop
