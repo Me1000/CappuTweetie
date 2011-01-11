@@ -8,7 +8,15 @@
 
 - (void)initWithDelegate:(id)aDelegate
 {
-    self = [super initWithContentRect:CGRectMake(0, 0, 330, 133) styleMask:CPDocModalWindowMask];
+    var styleMask = [CPPlatform isBrowser] ? CPDocModalWindowMask : CPTitledWindowMask|CPClosableWindowMask
+    self = [super initWithContentRect:CGRectMake(0, 0, 330, 133) styleMask:styleMask];
+    
+    if(![CPPlatform isBrowser])
+    {
+        [self setTitle:"Add Account"];
+        [self center];
+    }
+    
     var contentView = [self contentView];
     
     delegate = aDelegate;
@@ -59,7 +67,10 @@
 
 - (void)hideSheet:(id)sender
 {
-    [CPApp endSheet:self];
+    if([CPPlatform isBrowser])
+        [CPApp endSheet:self];
+    else
+        [self close];
 }
 
 - (void)addAccount:(id)sender
@@ -73,7 +84,12 @@
 {
     // FIXME: RangeError: Maximum call stack size exceeded error in NativeHost (me1000?)
     var sheet = [[AddAccountWindow alloc] initWithDelegate:aWindow];
-    [CPApp beginSheet:sheet modalForWindow:aWindow modalDelegate:nil didEndSelector:nil contextInfo:nil];
+    
+    if([CPPlatform isBrowser])
+        [CPApp beginSheet:sheet modalForWindow:aWindow modalDelegate:nil didEndSelector:nil contextInfo:nil];
+    else
+        [sheet makeKeyAndOrderFront:self];
+    
     [sheet.usernameField becomeFirstResponder];
     return sheet;
 }

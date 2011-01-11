@@ -89,7 +89,11 @@
         [alert setDelegate:self];
         [alert addButtonWithTitle:"Remove"];
         [alert addButtonWithTitle:"Cancel"];
-        [alert beginSheetModalForWindow:self];
+        
+        if([CPPlatform isBrowser])
+            [alert beginSheetModalForWindow:self];
+        else
+            [alert runModal];
     }
 }
 
