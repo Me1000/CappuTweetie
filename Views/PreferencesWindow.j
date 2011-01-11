@@ -30,6 +30,9 @@
 	[accountsTable setCornerView:nil];
 	[accountsTable setUsesAlternatingRowBackgroundColors:YES];
 	[accountsTable setAllowsEmptySelection:YES];
+	[accountsTable setVerticalMotionCanBeginDrag:YES];
+	[accountsTable setDraggingDestinationFeedbackStyle:CPTableViewDropAbove];
+	[accountsTable registerForDraggedTypes:["TwitterAccountDragType"]];
 	
 	var accountsColumn = [[CPTableColumn alloc] initWithIdentifier:"accounts"];
 	[accountsColumn setWidth:403];
@@ -141,6 +144,37 @@
 {
     var enabled = [accountsTable selectedRow] != CPNotFound;
     [segControl setEnabled:enabled forSegment:1];        
+}
+
+// drag and drop
+- (BOOL)tableView:(CPTableView)aTableView writeRowsWithIndexes:(CPIndexSet)rowIndexes toPasteboard:(CPPasteboard)pboard
+{
+    // encode the index(es)being dragged
+    var encodedData = [CPKeyedArchiver archivedDataWithRootObject:rowIndexes];
+    [pboard declareTypes:["TwitterAccountDragType"] owner:self];
+    [pboard setData:encodedData forType:"TwitterAccountDragType"];
+    return YES;
+}
+
+- (CPDragOperation)tableView:(CPTableView)aTableView validateDrop:(id)info proposedRow:(CPInteger)row proposedDropOperation:(CPTableViewDropOperation)operation
+{
+    [aTableView setDropRow:row dropOperation:CPTableViewDropAbove];
+    return CPDragOperationMove;
+}
+
+- (BOOL)tableView:(CPTableView)aTableView acceptDrop:(id)info row:(int)row dropOperation:(CPTableViewDropOperation)operation
+{
+    var pboard = [info draggingPasteboard],
+        rowData = [pboard dataForType:"TwitterAccountDragType"];
+        
+    rowData = [CPKeyedUnarchiver unarchiveObjectWithData:rowData];
+    var dropRow = [rowData firstIndex] < row ? row - 1 : row; // if we drop below the drag point we must subtract one
+    [accountsController moveAccountAtIndex:[rowData firstIndex] toIndex:dropRow];
+    
+    [accountsTable reloadData];
+    [accountsTable selectRowIndexes:[CPIndexSet indexSetWithIndex:dropRow] byExtendingSelection:NO];
+    
+    return YES;
 }
 
 @end

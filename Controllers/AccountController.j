@@ -30,4 +30,12 @@
     // TODO: remove account from sidebar
 }
 
+- (void)moveAccountAtIndex:(CPNumber)fromIndex toIndex:(CPNumber)toIndex
+{
+    var movedObject = [accounts objectAtIndex:fromIndex];
+    [accounts removeObjectAtIndex:fromIndex];
+    [accounts insertObject:movedObject atIndex:toIndex];
+    // TODO: reorder accounts in the sidebar
+}
+
 @end
