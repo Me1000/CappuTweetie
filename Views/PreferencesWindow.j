@@ -10,7 +10,7 @@
 
 - (void)init
 {
-    self = [super initWithContentRect:CGRectMake(200, 200, 450, 260) styleMask:CPTitledWindowMask|CPClosableWindowMask|CPMiniaturizableWindowMask];
+    self = [super initWithContentRect:CGRectMake(200, 200, 450, 260) styleMask:CPTitledWindowMask|CPClosableWindowMask];
 	[self center];
 	
 	var contentView = [self contentView];
