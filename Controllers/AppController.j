@@ -7,7 +7,6 @@
 @import <AppKit/CPScrollView.j>
 @import <Foundation/CPTimer.j>
 @import <AppKit/CPSegmentedControl.j>
-@import <AppKit/CPButtonBar.j>
 @import "../Views/NewTweetWindow.j"
 @import "../Views/TwitterWindow.j"
 @import "../Views/SidebarView.j"

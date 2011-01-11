@@ -6,6 +6,8 @@
 	CPScrollView	accountsScrollView;
 	CPTableView		accountsTable;
 	CPSegmentedControl segControl;
+	CPImage minusImage;
+	CPImage minusImageDimmed;
 }
 
 - (void)init
@@ -45,8 +47,9 @@
 	
 	// grabbed the images from CPButtonBar... not sure if they are right...
 	segControl = [[CPSegmentedControl alloc] initWithFrame:CGRectMake(22, 222, 0, 25)];
-	var plusImage = [[CPImage alloc] initWithContentsOfFile:[[CPBundle bundleForClass:[CPButtonBar class]] pathForResource:@"plus_button.png"] size:CGSizeMake(9, 10)],
-	    minusImage = image = [[CPImage alloc] initWithContentsOfFile:[[CPBundle bundleForClass:[CPButtonBar class]] pathForResource:@"minus_button.png"] size:CGSizeMake(9, 4)];
+	var plusImage = [[CPImage alloc] initWithContentsOfFile:[[CPBundle mainBundle] pathForResource:@"plus_button.png"] size:CGSizeMake(9, 10)];
+	minusImage = [[CPImage alloc] initWithContentsOfFile:[[CPBundle mainBundle] pathForResource:@"minus_button.png"] size:CGSizeMake(9, 4)];
+    minusImageDimmed = [[CPImage alloc] initWithContentsOfFile:[[CPBundle mainBundle] pathForResource:@"minus_button_dimmed.png"] size:CGSizeMake(9, 4)];
         
 	[segControl setTrackingMode:CPSegmentSwitchTrackingMomentary];
 	[segControl setTarget:self];
@@ -57,7 +60,7 @@
 	[segControl setTag:"add" forSegment:0];
 	[segControl setWidth:25 forSegment:0];
 	
-	[segControl setImage:minusImage forSegment:1];
+	[segControl setImage:minusImageDimmed forSegment:1];
 	[segControl setTag:"remove" forSegment:1];
 	[segControl setWidth:25 forSegment:1];
 	[segControl setEnabled:NO forSegment:1];
@@ -107,6 +110,7 @@
         [accountsController removeAccountAtIndex:[accountsTable selectedRow]];
         [accountsTable reloadData];
         [segControl setEnabled:NO forSegment:1];
+        [segControl setImage:minusImageDimmed forSegment:1];
     }
 }
 
@@ -144,7 +148,11 @@
 - (void)tableViewSelectionDidChange:(CPNotification)aNotification
 {
     var enabled = [accountsTable selectedRow] != CPNotFound;
-    [segControl setEnabled:enabled forSegment:1];
+    if([segControl isEnabledForSegment:1] !== enabled)
+    {
+        [segControl setEnabled:enabled forSegment:1];
+        [segControl setImage:(enabled ? minusImage : minusImageDimmed) forSegment:1];
+    }
 }
 
 // drag and drop
