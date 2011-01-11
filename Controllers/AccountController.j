@@ -13,14 +13,15 @@
 - (void)addAccount:(TwitterAccount)anAccount
 {
     var usernames = [accounts valueForKey:"username"];
-    if([usernames containsObject:[anAccount username]])
+    if(![usernames containsObject:[anAccount username]])
     {
-        var alert = [CPAlert alertWithError:"You cannot add the same account twice."];
-        [alert runModal]; // not sure why this isn't draggable and the OK button isn't clickable (me1000?)
-    }
-    else
+        // TODO: actually perform twitter authentication
         [accounts addObject:anAccount];
         // TODO: add account to sidebar
+        return true;
+    }
+    
+    return false;
 }
 
 - (void)removeAccountAtIndex:(int)index

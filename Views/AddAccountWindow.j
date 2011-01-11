@@ -75,14 +75,14 @@
 
 - (void)addAccount:(id)sender
 {
-    // TODO: actually perform twitter authentication
-    [self hideSheet:nil];
-    [delegate addAccountWithUsername:[usernameField stringValue] password:[passwordField stringValue]];
+    var hide = [delegate addAccountWithUsername:[usernameField stringValue] password:[passwordField stringValue]];
+    if(hide)
+        [self hideSheet:nil];
 }
 
 + (void)showSheetForWindow:(CPWindow)aWindow
 {
-    // FIXME: RangeError: Maximum call stack size exceeded error in NativeHost (me1000?)
+    // FIXME: RangeError: Maximum call stack size exceeded error in NativeHost (bug in NH)
     var sheet = [[AddAccountWindow alloc] initWithDelegate:aWindow];
     
     if([CPPlatform isBrowser])

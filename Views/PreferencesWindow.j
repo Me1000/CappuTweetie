@@ -113,8 +113,18 @@
 
 - (void)addAccountWithUsername:(CPString)username password:(CPString)password
 {
-    [accountsController addAccount:[TwitterAccount accountWithUsername:username password:password]];
-    [accountsTable reloadData];
+    var ok = [accountsController addAccount:[TwitterAccount accountWithUsername:username password:password]];
+    if(ok)
+    {
+        [accountsTable reloadData];
+    }
+    else
+    {
+        var alert = [CPAlert alertWithError:"You cannot add the same account twice."];
+        [alert runModal];
+    }
+    
+    return ok;
 }
 
 - (int)numberOfRowsInTableView:(CPTableView)atableView
