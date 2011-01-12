@@ -109,8 +109,7 @@
     {
         [accountsController removeAccountAtIndex:[accountsTable selectedRow]];
         [accountsTable reloadData];
-        [segControl setEnabled:NO forSegment:1];
-        [segControl setImage:minusImageDimmed forSegment:1];
+        [accountsTable _noteSelectionDidChange];
     }
 }
 
@@ -147,7 +146,7 @@
 
 - (void)tableViewSelectionDidChange:(CPNotification)aNotification
 {
-    var enabled = [accountsTable selectedRow] != CPNotFound;
+    var enabled = [[accountsTable selectedRowIndexes] firstIndex] != CPNotFound;
     if([segControl isEnabledForSegment:1] !== enabled)
     {
         [segControl setEnabled:enabled forSegment:1];
