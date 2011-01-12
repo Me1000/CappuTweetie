@@ -7,6 +7,7 @@
 {
     self = [super initWithContentRect:CGRectMake(100, 100, 400, 135) styleMask:CPTitledWindowMask|CPClosableWindowMask|CPMiniaturizableWindowMask];
     [self center];
+    [self setMovableByWindowBackground:YES];
     
     if (self)
     {
