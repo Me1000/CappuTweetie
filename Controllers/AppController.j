@@ -85,6 +85,7 @@ accountsController = [[AccountController alloc] init];
     [tweetTable setBackgroundColor:bgColor];
     [tweetTable setDoubleAction:@selector(didDoubleClick:)];
     [tweetTable setTarget:self];
+    [tweetTable setColumnAutoresizingStyle:CPTableViewLastColumnOnlyAutoresizingStyle];
 
     // Load tweets...
     tweetController = [[CPArrayController alloc] init];
@@ -193,7 +194,33 @@ accountsController = [[AccountController alloc] init];
 
 - (void)didDoubleClick:(id)sender
 {
-    console.log(sender);
+    // FIX ME: Add delegate: when animation finishes close the window. 
+    // Figure out what we double clicked on... if there is a reply load that reply chain all the way back,
+    // otherwise place that tweet in its own array and load it into the controller...
+    // Also, create a new tableview (or have a 2nd one already qued up) which we load the new content to.
+
+    var sender = [[sender superview] superview],
+        convertedPoint = [[sender window] convertBaseToGlobal:[sender convertPoint:[sender frame].origin toView:nil]];
+        newWindowRect = CGRectMake(convertedPoint.x - 100, convertedPoint.y - 100, [sender frame].size.width + 200, [sender frame].size.height + 200),
+        startRect = CGRectMake(40, 73, [sender frame].size.width, [sender frame].size.height),
+        endRect =  CGRectMake(30, 63, [sender frame].size.width + 20, [sender frame].size.height + 20),
+
+
+
+
+    var newWindow = [[CPWindow alloc] initWithContentRect:newWindowRect styleMask:CPBorderlessWindowMask];
+
+    [newWindow orderFront:self];
+    [[newWindow contentView] addSubview:sender];
+
+
+    var dict = [CPDictionary dictionaryWithObjects:[sender, startRect, endRect, CPViewAnimationFadeOutEffect]
+                                           forKeys:[CPViewAnimationTargetKey, CPViewAnimationStartFrameKey, CPViewAnimationEndFrameKey, CPViewAnimationEffectKey]];
+
+    var ani = [[CPViewAnimation alloc] initWithViewAnimations:[dict]];
+    [ani setDuration:.1];
+
+    [ani startAnimation];
 }
 
 @end
