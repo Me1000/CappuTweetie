@@ -54,7 +54,8 @@
 
         [bottomView addSubview:button];
 
-        var button = [[CPPopUpButton alloc] initWithFrame:CGRectMake(5,5, 115, 24)];
+        var button = [[CPPopUpButton alloc] initWithFrame:CGRectMake(5,5, 135, 24)];
+        [button setImageOffset:5];
 
         var item = [[CPMenuItem alloc] initWithTitle:"Me1000" action:nil keyEquivalent:nil];
         [item setImage:[[CPImage alloc] initWithContentsOfFile:"http://a3.twimg.com/profile_images/940080497/IMG_2697_normal.jpg" size:CGSizeMake(15,15)]];
