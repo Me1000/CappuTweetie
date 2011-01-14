@@ -26,8 +26,10 @@ var cachedAvatars = {};
         [timeSinceTweet setFont:[CPFont systemFontOfSize:11]];
         [timeSinceTweet setTextColor:[CPColor grayColor]];
         [timeSinceTweet setAlignment:CPRightTextAlignment];
+        [timeSinceTweet setAutoresizingMask:CPViewMinXMargin];
         
         tweetText = [[TweetTextView alloc] initWithFrame:CGRectMake(75, 25, aFrame.size.width - 100, 20)];
+        [tweetText setAutoresizingMask:CPViewWidthSizable|CPViewHeightSizable];
         
         replyButton = [[CPButton alloc] initWithFrame:CGRectMake(CGRectGetMaxX(aFrame) - 28, 5, 20, 20)];
         [replyButton setBordered:NO];
