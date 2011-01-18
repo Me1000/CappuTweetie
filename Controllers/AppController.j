@@ -29,6 +29,7 @@ accountsController = [[AccountController alloc] init];
 
     CPArrayController tweetController @accessors;
     CPWindow preferencesWindow;
+    SidebarView sidebar @accessors;
 }
 
 - (void)applicationDidFinishLaunching:(CPNotification)aNotification
@@ -73,7 +74,7 @@ accountsController = [[AccountController alloc] init];
     [contentView addSubview:breadcrumbs];
 
     // Sidebar...
-    var sidebar = [[SidebarView alloc] initWithFrame:CGRectMake(0, 0, 60, 585)];
+    sidebar = [[SidebarView alloc] initWithFrame:CGRectMake(0, 0, 60, 585)];
     [contentView addSubview:sidebar];
 
     tweetScrollView = [[CPScrollView alloc] initWithFrame:CGRectMake(60, 27, 340, 535)];

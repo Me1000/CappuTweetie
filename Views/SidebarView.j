@@ -1,6 +1,5 @@
 @implementation SidebarView : CPView
 {
-    CPArray     accounts;
     int         activeAccount;
     
     CPView      buttonContainer;
@@ -12,6 +11,7 @@
     CPButton    activeButton;
 
     CPArray     avatarViews;
+    BOOL        animateAvatars;
 }
 
 - (id)initWithFrame:(CGRect)aFrame
@@ -21,8 +21,8 @@
     if(self)
     {
         activeAccount = 0;
-        accounts = [];
         avatarViews = [];
+        animateAvatars = YES;
 
         var sidebg = [CPColor colorWithPatternImage:[[CPThreePartImage alloc] initWithImageSlices:[
             [[CPImage alloc] initWithContentsOfFile:[[CPBundle mainBundle] pathForResource:"Sidebar/sidebar-top.png"] size:CGSizeMake(60,5)],
@@ -67,9 +67,6 @@
 
         [buttonsContanier setSubviews:[tweetsButton, replyButton, messagesButton, searchButton, selectionArrow]];
         [self addSubview:buttonsContanier];
-
-        [self addAccount:"Me1000"];
-        [self addAccount:"Cappuccino"];
     }
     
     return self;
@@ -77,27 +74,25 @@
 
 - (void)addAccount:(TwitterAccount)anAccount
 {
-    [accounts addObject:anAccount];
-    // TODO: this should use the AccountController to store its data instead...
-
     // fix me: this image should be rounded by default
     var newAvatarView = [[SidebarButton alloc] initWithFrame:CGRectMake(4,0,48,48)];
     [newAvatarView setTarget:self];
     [newAvatarView setAction:@selector(setActiveAccount:)];
     
-    if(accounts.length == 1)
+    if([accountsController accounts].length === 1)
         [newAvatarView setSelected:YES];
 
     // FIX ME: use the real image dude...
     [newAvatarView setImage:[[CPImage alloc] initWithContentsOfFile:[[CPBundle mainBundle] pathForResource:"Sidebar/avatar.png"] size:CGSizeMake(48,48)]];
     [avatarViews addObject:newAvatarView];
 
+    animateAvatars = NO;
     [self setNeedsLayout];
 }
 
 - (void)setActiveAccount:(id)sender
 {
-    [[avatarViews objectAtIndex:activeAccount] setSelected:NO];
+    [[avatarViews objectAtIndex:activeAccount] setSelectedWithAnimation:NO];
     [sender setSelected:YES];
     
     var idx = [avatarViews indexOfObject:sender];
@@ -108,7 +103,7 @@
 
 - (void)setActiveButton:(id)sender
 {
-    [activeButton setSelected:NO];
+    [activeButton setSelectedWithAnimation:NO];
     [sender setSelected:YES];
     
     activeButton = sender;
@@ -118,7 +113,7 @@
 - (void)layoutSubviews
 {
     var i = 0,
-        c = accounts.length,
+        c = [accountsController accounts].length,
         y = 6,
         animations = [];
 
@@ -129,17 +124,26 @@
 
         [self addSubview:avatar];
 
-        var newAni = [CPDictionary dictionaryWithObjects:[avatar, [avatar frame], CGRectMake(4, y, 48, 48)]
-                                                 forKeys:[CPViewAnimationTargetKey, CPViewAnimationStartFrameKey, CPViewAnimationEndFrameKey]];
-        [animations addObject:newAni];
+        var newFrame = CGRectMake(4, y, 48, 48);
+        if(animateAvatars)
+        {
+            var newAni = [CPDictionary dictionaryWithObjects:[avatar, [avatar frame], newFrame]
+                                       forKeys:[CPViewAnimationTargetKey, CPViewAnimationStartFrameKey, CPViewAnimationEndFrameKey]];
+            [animations addObject:newAni];
+        }
+        else
+        {
+            [avatar setFrame:newFrame];
+        }
+        
         y += 65;
-
 
         if (i === activeAccount)
         {
             var newAni = [CPDictionary dictionaryWithObjects:[buttonsContanier, [buttonsContanier frame], CGRectMake(12, y, 48, 175)]
-                                                 forKeys:[CPViewAnimationTargetKey, CPViewAnimationStartFrameKey, CPViewAnimationEndFrameKey]];
+                                       forKeys:[CPViewAnimationTargetKey, CPViewAnimationStartFrameKey, CPViewAnimationEndFrameKey]];
             [animations addObject:newAni];
+            
             y += 160;
         }
     }
@@ -157,6 +161,9 @@
     [animation setAnimationCurve:CPAnimationEaseInOut];
     [animation setDelegate:self];
     [animation startAnimation];
+    
+    if(!animateAvatars)
+        animateAvatars = YES;
 }
 
 @end
@@ -183,7 +190,19 @@
 - (void)setSelected:(BOOL)isSelected
 {
     selected = isSelected;
-    [self setAlphaValue:(selected ? 1 : 0.5)]
+    [self setAlphaValue:(selected ? 1 : 0.5)];
+}
+
+- (void)setSelectedWithAnimation:(BOOL)isSelected
+{
+    if(selected === isSelected)
+        return;
+        
+    selected = isSelected;
+    [currentAnimation stopAnimation];
+    
+    var alpha = (selected ? 1 : 0.5);
+    currentAnimation = [DimAnimation animateView:self toAlphaValue:alpha];
 }
 
 - (void)highlight:(CPInteger)isHighlighted
@@ -192,11 +211,8 @@
     [super highlight:isHighlighted];
     [currentAnimation stopAnimation];
     
-    if(isHighlighted)
-        currentAnimation = [DimAnimation animateView:self toAlphaValue:1];
-        
-    else
-        currentAnimation = [DimAnimation animateView:self toAlphaValue:0.5];
+    var alpha = (isHighlighted ? 1 : 0.5);
+    currentAnimation = [DimAnimation animateView:self toAlphaValue:alpha];
 }
 
 - (void)stopTracking:(CGPoint)lastPoint at:(CGPoint)aPoint mouseIsUp:(BOOL)mouseIsUp
