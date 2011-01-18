@@ -17,7 +17,7 @@
     {
         // TODO: actually perform twitter authentication
         [accounts addObject:anAccount];
-        // TODO: add account to sidebar
+        [[[CPApp delegate] sidebar] addAccount:anAccount];
         return true;
     }
     

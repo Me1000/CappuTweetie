@@ -73,7 +73,7 @@ var cachedAvatars = {};
 - (void)replyToTweet:(id)sender
 {
     var replyWindow = [[NewTweetWindow alloc] initWithTweetReply:tweet];
-    [replyWindow orderFront:self];
+    [replyWindow makeKeyAndOrderFront:self];
 
     // FIX ME: we really need a CoreText solution for typing... similar to the tweet view. As we type we need to make hash tags gray, links highlighted, and usernames blue.
 }
