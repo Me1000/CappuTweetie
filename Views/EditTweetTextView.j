@@ -182,6 +182,15 @@
         
         [parsedLines addObject:line];
     }
+
+    // finally we need to update the height
+    var superview = [self superview];
+        superHeight = [superview bounds].size.height,
+        newHeight = MAX(superHeight, lines.length * 20 + 8),
+        superWidth = [[[superview superview] verticalScroller] isHidden] ? [superview bounds].size.width : [superview bounds].size.width - 1;
+        size = CGSizeMake(superWidth, newHeight);
+
+    [self setFrameSize:size];
 }
 
 /*
