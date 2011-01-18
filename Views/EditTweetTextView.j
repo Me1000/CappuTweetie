@@ -17,6 +17,8 @@
  * fix word wrapping
  * implement undo/redo
  * better parsing
+ * autoscrolling when selecting text
+ * scroll to bottom when adding a new line
  * make the TweetWindow update the number of characters remaining
  * fix bugs
  */
@@ -187,7 +189,7 @@
     var superview = [self superview];
         superHeight = [superview bounds].size.height,
         newHeight = MAX(superHeight, lines.length * 20 + 8),
-        superWidth = [[[superview superview] verticalScroller] isHidden] ? [superview bounds].size.width : [superview bounds].size.width - 1;
+        superWidth = [superview bounds].size.width,
         size = CGSizeMake(superWidth, newHeight);
 
     [self setFrameSize:size];
