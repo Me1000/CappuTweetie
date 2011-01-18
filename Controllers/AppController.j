@@ -214,7 +214,7 @@ accountsController = [[AccountController alloc] init];
         convertedPoint = [[sender window] convertBaseToGlobal:[sender convertPoint:[sender frame].origin toView:nil]];
         newWindowRect = CGRectMake(convertedPoint.x - 100, convertedPoint.y - 100, [sender frame].size.width + 200, [sender frame].size.height + 200),
         startRect = CGRectMake(40, 73, [sender frame].size.width, [sender frame].size.height),
-        endRect =  CGRectMake(30, 63, [sender frame].size.width + 20, [sender frame].size.height + 20),
+        endRect =  CGRectMake(30, 63, [sender frame].size.width + 20, [sender frame].size.height + 20);
 
 
 
@@ -248,7 +248,7 @@ OPEN_LINK = function(url)
             location = CGRectMake(mouseAt.x, mouseAt.y, 25, 25),
             imageWindow = [[CPWindow alloc] initWithContentRect:location styleMask:CPTitledWindowMask|CPHUDBackgroundWindowMask|CPResizableWindowMask|CPClosableWindowMask],
             contentView = [imageWindow contentView],
-            imageView = [[CPImageView alloc] initWithFrame:[contentView bounds]]
+            imageView = [[CPImageView alloc] initWithFrame:[contentView bounds]],
             finalFrame = CGRectMake(300,100, 500, 500);
 
         [imageView setImage:[[CPImage alloc] initWithContentsOfFile:url]];
