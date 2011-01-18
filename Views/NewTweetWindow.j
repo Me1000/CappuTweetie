@@ -1,6 +1,11 @@
+@import "EditTweetTextView.j"
+
 @implementation NewTweetWindow : CPWindow
 {
     CPTextField charsLeftField;
+    CPColor normalCharCountColor;
+    CPColor warningCharCountColor;
+    EditTweetTextView text;
 }
 
 - (id)initWithTweetReply:(JSObject)aTweet
@@ -8,14 +13,17 @@
     self = [super initWithContentRect:CGRectMake(100, 100, 400, 135) styleMask:CPTitledWindowMask|CPClosableWindowMask|CPMiniaturizableWindowMask];
     [self center];
     [self setMovableByWindowBackground:YES];
+    [self setDelegate:self];
     
     if (self)
     {
+        normalCharCountColor = [CPColor colorWithRed:115/255 green:115/255 blue:115/255 alpha:1];
+        warningCharCountColor = [CPColor colorWithHexString:"952725"];
 
         //add a textfield for the number of chars left
         charsLeftField = [[CPTextField alloc] initWithFrame:CGRectMake(370, 5, 30, 17)];
         [charsLeftField setStringValue:"140"];
-        [charsLeftField setTextColor:[CPColor colorWithRed:115/255 green:115/255 blue:115/255 alpha:1]]
+        [charsLeftField setTextColor:normalCharCountColor]
         [charsLeftField setFont:[CPFont systemFontOfSize:11]];
         [self._windowView._headView addSubview:charsLeftField];
 
@@ -45,7 +53,6 @@
         [button addItem:item];
 
         [button addItem:[CPMenuItem separatorItem]];
-
         [button addItemWithTitle:"Add Image..."];
 
         var item = [[CPMenuItem alloc] initWithTitle:"Record Video..." action:nil keyEquivalent:"v"];
@@ -69,17 +76,21 @@
 
 
         var scroll = [[CPScrollView alloc] initWithFrame:CGRectMake(0, 0, 400, 100)];
+        [scroll setAutohidesScrollers:YES];
         [scroll setHasHorizontalScroller:NO];
 
-
-        var text = [[EditTweetTextView alloc] initWithFrame:CGRectMake(0,0,400,100)];
+        text = [[EditTweetTextView alloc] initWithFrame:CGRectMake(0,0,400,100)];
+        [text setDelegate:self];
+        [self makeFirstResponder:text];
 
         [scroll setDocumentView:text];
+        [contentView addSubview:scroll];
 
         if (aTweet)
-            [text setStringValue:"@" + aTweet.user.name + " "];
-
-        [contentView addSubview:scroll];
+        {
+            [text setStringValue:"@" + aTweet.user.screen_name + " "];
+            [text moveCursorToEnd];
+        }
 
 
         [contentView addSubview:bottomView];
@@ -88,32 +99,23 @@
     return self;
 }
 
-@end
-
-@implementation EditTweetTextView : CPControl
+- (void)setCharCount:(CPNumber)chars
 {
-    DOMElement textArea;
+    [charsLeftField setStringValue:"" + chars];
+    if(chars < 0)
+        [charsLeftField setTextColor:warningCharCountColor];
+    else
+        [charsLeftField setTextColor:normalCharCountColor];
 }
 
-- (id)initWithFrame:(CGRect)aRect
+- (void)windowDidBecomeKey:(CPNotification)notification
 {
-    self = [super initWithFrame:aRect];
-
-    if (self)
-    {
-        textArea = document.createElement("div");
-
-        _DOMElement.appendChild(textArea);
-    }
-
-    return self;
+    [text focus];
 }
 
-- (void)setStringValue:(CPString)aString
+- (void)windowDidResignKey:(CPNotification)notification
 {
-    [super setStringValue:aString];
-
-    // parse the string to make it sexy
+    [text blur];
 }
 
 @end

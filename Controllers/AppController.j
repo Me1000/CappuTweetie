@@ -57,8 +57,18 @@ accountsController = [[AccountController alloc] init];
     var item = [mainMenu addItemWithTitle:"File" action:nil keyEquivalent:nil],
         fileMenu = [[CPMenu alloc] initWithTitle:"File"];
         
-    [fileMenu addItemWithTitle:"New Tweet..." action:@selector(newTweet:) keyEquivalent:"N"];
+    [fileMenu addItemWithTitle:"New Tweet..." action:@selector(newTweet:) keyEquivalent:"n"];
     [mainMenu setSubmenu:fileMenu forItem:item];
+    
+    var editMenuItem = [mainMenu addItemWithTitle:"Edit" action:nil keyEquivalent:nil],
+            editMenu = [[CPMenu alloc] initWithTitle:"Edit"];
+            
+    [editMenu addItemWithTitle:"Cut" action:@selector(cut:) keyEquivalent:"x"];
+    [editMenu addItemWithTitle:"Copy" action:@selector(copy:) keyEquivalent:"c"];
+    [editMenu addItemWithTitle:"Paste" action:@selector(paste:) keyEquivalent:"v"];
+    [editMenu addItemWithTitle:"Select All" action:@selector(selectAll:) keyEquivalent:"a"];
+    
+    [editMenuItem setSubmenu:editMenu];
         
     // set & make visible 
     [CPApp setMainMenu:mainMenu];
@@ -139,7 +149,7 @@ accountsController = [[AccountController alloc] init];
 - (void)newTweet:(id)sender
 {
     var tweetWindow = [[NewTweetWindow alloc] initWithTweetReply:""];
-    [tweetWindow orderFront:self];
+    [tweetWindow makeKeyAndOrderFront:self];
 }
 
 - (void)showPreferencesWindow:(id)sender
