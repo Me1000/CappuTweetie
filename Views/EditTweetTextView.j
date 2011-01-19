@@ -188,10 +188,18 @@
     // finally we need to update the height
     var superview = [self superview];
         superHeight = [superview bounds].size.height,
+        prevHeight = [self bounds].size.height,
         newHeight = MAX(superHeight, lines.length * 20 + 8),
         superWidth = [superview bounds].size.width,
         size = CGSizeMake(superWidth, newHeight);
-
+    
+    // fix a weird scrolling bug...
+    if((prevHeight === superHeight && newHeight > superHeight) || (prevHeight > superHeight && newHeight === superHeight))
+    {
+        [self setFrameSize:size];
+        size.width = [superview bounds].size.width;
+    }
+    
     [self setFrameSize:size];
 }
 
