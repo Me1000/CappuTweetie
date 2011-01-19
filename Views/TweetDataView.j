@@ -90,7 +90,7 @@ var cachedAvatars = {};
 
     tweet = aTweet;
 
-    [authorName setStringValue:aTweet.user.name];
+    [authorName setStringValue:(aTweet.user) ? aTweet.user.name : aTweet.from_user];
 
     var tweetDate = new Date(aTweet.created_at);
     [timeSinceTweet setStringValue:[tweetDate relativeDateSinceNow]];
@@ -104,7 +104,7 @@ var cachedAvatars = {};
 
     [tweetText setFrame:frame];
 
-    var userImage = [[CPImage alloc] initWithContentsOfFile:aTweet.user.profile_image_url size:CGSizeMake(50,50)];
+    var userImage = [[CPImage alloc] initWithContentsOfFile:(aTweet.user) ? aTweet.user.profile_image_url : aTweet.profile_image_url size:CGSizeMake(50,50)];
     [authorAvatarView setImage:userImage];
 }
 

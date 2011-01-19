@@ -22,14 +22,23 @@ accountsController = [[AccountController alloc] init];
 
 @implementation AppController : CPObject
 {
-    CPScrollView tweetScrollView;
-    CPTableView  tweetTable;
-    CPTableColumn tweetsColumn;
-    CPTextField cachedTextField;
+    CPView          displayedView;
+    CPView          timelineView;
+    CPView          mentionsView;
+    CPView          messagesView;
+    CPView          searchView;
+    CPScrollView    tweetScrollView;
+    CPScrollView    searchScrollView;
+    CPTableView     tweetTable;
+    CPTableView     searchTable;
+    CPTableColumn   tweetsColumn;
+    CPTableColumn   searchColumn;
+    CPTextField     cachedTextField;
 
-    CPArrayController tweetController @accessors;
-    CPWindow preferencesWindow;
-    SidebarView sidebar @accessors;
+    CPArrayController   tweetController     @accessors;
+    CPArrayController   searchController    @accessors;
+    CPWindow            preferencesWindow;
+    SidebarView         sidebar @accessors;
 }
 
 - (void)applicationDidFinishLaunching:(CPNotification)aNotification
@@ -74,20 +83,27 @@ accountsController = [[AccountController alloc] init];
     [CPApp setMainMenu:mainMenu];
     [CPMenu setMenuBarVisible:YES]; 
 
+    // Sidebar...
+    sidebar = [[SidebarView alloc] initWithFrame:CGRectMake(0, 0, 60, 585)];
+    [contentView addSubview:sidebar];
+    
+    // Timeline container view...
+    timelineView = [[CPView alloc] initWithFrame:CGRectMake(60, 0, 345, 562)];
+    [contentView addSubview:timelineView];
+    
+    // Hold the actual view in this variable so we can access it no matter what type of timeline is showed;
+    displayedView = timelineView;
+    
     // Breadcrumbs...
-    var breadcrumbs = [[BreadcrumbView alloc] initWithFrame:CGRectMake(60,0,345,27)];
+    var breadcrumbs = [[BreadcrumbView alloc] initWithFrame:CGRectMake(0,0,345,27)];
     [breadcrumbs addItem:"Timeline"];
     [breadcrumbs addItem:"Me1000"];
     [breadcrumbs addItem:"devongovett"];
     [breadcrumbs addItem:"Tolmasky"];
 
-    [contentView addSubview:breadcrumbs];
+    [timelineView addSubview:breadcrumbs];
 
-    // Sidebar...
-    sidebar = [[SidebarView alloc] initWithFrame:CGRectMake(0, 0, 60, 585)];
-    [contentView addSubview:sidebar];
-
-    tweetScrollView = [[CPScrollView alloc] initWithFrame:CGRectMake(60, 27, 340, 535)];
+    tweetScrollView = [[CPScrollView alloc] initWithFrame:CGRectMake(0, 27, 340, 535)];
     
     // Main tweet tableview...
     // we can make this size zero because it will be sized to fit when we add it to the scrollview.
@@ -117,7 +133,83 @@ accountsController = [[AccountController alloc] init];
     [tweetScrollView setVerticalScroller:newScroller];
     [tweetScrollView setDocumentView:tweetTable];
 
-    [contentView addSubview:tweetScrollView];
+    [timelineView addSubview:tweetScrollView];
+    
+    
+    // Timeline container view...
+    // We have to set the position when the button is clicked on the sidebar...
+    // Same with messages view and search view BTW...
+    mentionsView = [[CPView alloc] initWithFrame:CGRectMake(60, 2000, 345, 562)];
+    [mentionsView setHidden:YES];
+    [contentView addSubview:mentionsView];
+    
+    // Breadcrumbs for mentions view...
+    var breadcrumbs = [[BreadcrumbView alloc] initWithFrame:CGRectMake(0,0,345,27)];
+    [breadcrumbs addItem:"Mentions"];
+    [breadcrumbs addItem:"eliime"];
+
+    [mentionsView addSubview:breadcrumbs];
+    
+    
+    messagesView = [[CPView alloc] initWithFrame:CGRectMake(60, 2000, 345, 562)];
+    [messagesView setHidden:YES];
+    [contentView addSubview:messagesView];
+    
+    // Breadcrumbs for messages view...
+    var breadcrumbs = [[BreadcrumbView alloc] initWithFrame:CGRectMake(0,0,345,27)];
+    [breadcrumbs addItem:"Messages"];
+
+    [messagesView addSubview:breadcrumbs];
+    
+    searchView = [[CPView alloc] initWithFrame:CGRectMake(60, 2000, 345, 562)];
+    [searchView setHidden:YES];
+    [contentView addSubview:searchView];
+    
+    // Breadcrumbs for search view...
+    var breadcrumbs = [[BreadcrumbView alloc] initWithFrame:CGRectMake(0,0,345,27)];
+    [breadcrumbs addItem:"Search"];
+
+    [searchView addSubview:breadcrumbs];
+    
+    var searchField = [[CPSearchField alloc] initWithFrame:CGRectMake(220, -4, 120, 30)];
+    [searchField setSendsSearchStringImmediately:NO];
+    [searchField setSendsWholeSearchString:YES];
+    [searchField setTarget:self];
+    [searchField setAction:@selector(performSearch:)];
+    [searchView addSubview:searchField];
+    
+    
+    searchScrollView = [[CPScrollView alloc] initWithFrame:CGRectMake(0, 27, 340, 535)];
+    
+    // Main tweet tableview...
+    // we can make this size zero because it will be sized to fit when we add it to the scrollview.
+    searchTable = [[TweetTableView alloc] initWithFrame:CGRectMakeZero()];
+    [searchTable setDelegate:self];
+    [searchTable setBackgroundColor:bgColor];
+    [searchTable setDoubleAction:@selector(didDoubleClick:)];
+    [searchTable setTarget:self];
+    [searchTable setColumnAutoresizingStyle:CPTableViewLastColumnOnlyAutoresizingStyle];
+    
+    searchController = [[CPArrayController alloc] init];
+    
+    searchColumn = [[CPTableColumn alloc] initWithIdentifier:"tweets"];
+    [searchColumn setWidth:322];
+    [searchTable addTableColumn:searchColumn];
+    [searchColumn bind:CPValueBinding toObject:searchController withKeyPath:"arrangedObjects" options:nil];
+
+    var dataViewPrototype = [[TweetDataView alloc] initWithFrame:CGRectMake(0,0,322,100)];
+    [searchColumn setDataView:dataViewPrototype];
+    
+    // Custom scrolling....
+    var newScroller = [[TweetScroller alloc] initWithFrame:CGRectMake(0,0,11,100)];
+    [searchScrollView setHasHorizontalScroller:NO];
+    [searchScrollView setVerticalScroller:newScroller];
+    [searchScrollView setDocumentView:searchTable];
+
+    [searchView addSubview:searchScrollView];
+    
+    
+    
     
     // Bottom toolbar
     var toolbar = [[CPView alloc] initWithFrame:CGRectMake(0, 562, 405, 23)],
@@ -144,6 +236,117 @@ accountsController = [[AccountController alloc] init];
     [theWindow orderFront:self];
     
     preferencesWindow = [[PreferencesWindow alloc] init];
+    
+    [[CPNotificationCenter defaultCenter]
+        addObserver:self
+            selector:@selector(didClickSidebarButton:)
+                name:@"didClickSidebarButton"
+                object:nil];
+}
+
+- (void)didClickSidebarButton:(CPNotification)aNotification
+{
+    var desiredView;
+    var animationDirection;
+    
+    // What button is clicked?
+    var buttonType = [aNotification object];
+    
+    if (buttonType == @"timeline") {
+        desiredView = timelineView;
+        
+        // Do nothing if we are already on timeline view...
+        if (displayedView === timelineView)
+            return;
+        
+        animationDirection = @"up";
+    }
+    else if (buttonType == @"mentions") {
+        desiredView = mentionsView;
+        
+        // Do nothing if we are already on mentions view...
+        if (displayedView === mentionsView)
+            return;
+        else if (displayedView === timelineView)
+            animationDirection = @"down";
+        else
+            animationDirection = @"up";
+    }
+    else if (buttonType == @"messages") {
+        desiredView = messagesView;
+        
+        // Do nothing if we are already on messages view...
+        if (displayedView === messagesView)
+            return;
+        else if (displayedView === searchView)
+            animationDirection = @"up";
+        else
+            animationDirection = @"down";
+    }
+    else if (buttonType == @"search") {
+        desiredView = searchView;
+        
+        // Do nothing if we are already on search view...
+        if (displayedView === searchView)
+            return;
+        
+        animationDirection = @"down";
+    }
+    
+    
+    var directionMultiplier     = (animationDirection == @"up") ? 1 : -1;
+    
+    [desiredView setFrame:CGRectMake(60, 
+                                     -directionMultiplier*[displayedView bounds].size.height,
+                                     [desiredView bounds].size.width,
+                                     [desiredView bounds].size.height)];
+                                     
+    [desiredView setHidden:NO];
+    
+    var displayedViewStartFrame = [displayedView frame];
+    var displayedViewEndFrame   = CGRectMake(60, 
+                                             [displayedView frame].origin.y + [displayedView frame].size.height*directionMultiplier,
+                                             [displayedView bounds].size.width,
+                                             [displayedView bounds].size.height);
+                                             
+   var desiredViewStartFrame = [desiredView frame];
+   var desiredViewEndFrame   = CGRectMake(60, 
+                                          0,
+                                          [desiredView bounds].size.width,
+                                          [desiredView bounds].size.height);
+
+    var animation = [[CPViewAnimation alloc] initWithViewAnimations:[
+       [CPDictionary dictionaryWithJSObject:{
+           CPViewAnimationTargetKey:displayedView, 
+           CPViewAnimationStartFrameKey:displayedViewStartFrame,
+           CPViewAnimationEndFrameKey:displayedViewEndFrame
+       }],
+       [CPDictionary dictionaryWithJSObject:{
+           CPViewAnimationTargetKey:desiredView, 
+           CPViewAnimationStartFrameKey:desiredViewStartFrame,
+           CPViewAnimationEndFrameKey:desiredViewEndFrame
+       }]
+    ]];
+    
+    [animation setAnimationCurve:CPAnimationEaseInOut];
+    [animation setDuration:0.3];
+    [animation startAnimation];
+    
+    displayedView   = desiredView;
+    desiredView     = nil;
+}
+
+- (void)performSearch:(id)sender
+{
+    var query = [sender objectValue];
+    
+    if (!query)
+        return;
+    
+    [searchController setContent:[]];
+    [searchTable setIsLoading:YES];
+        
+    var twitterApi = [[TwitterAPIController alloc] searchForString:query];
 }
 
 - (void)newTweet:(id)sender

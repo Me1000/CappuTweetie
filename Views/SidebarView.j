@@ -103,8 +103,23 @@
 
 - (void)setActiveButton:(id)sender
 {
+    var notificationMessage;
+    
     [activeButton setSelectedWithAnimation:NO];
     [sender setSelected:YES];
+    
+    // Prepare the notification object depending on what button is clicked...
+    if (sender === tweetsButton)
+        notificationMessage = @"timeline";
+    else if (sender === replyButton)
+        notificationMessage = @"mentions";
+    else if (sender === messagesButton)
+        notificationMessage = @"messages";
+    else if (sender === searchButton)
+        notificationMessage = @"search";
+    
+    // Post the notification..
+    [[CPNotificationCenter defaultCenter] postNotificationName:@"didClickSidebarButton" object:notificationMessage];
     
     activeButton = sender;
     [self setNeedsLayout];

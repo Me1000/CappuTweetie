@@ -24,5 +24,27 @@
 
     getData.send("");
 }
+
+- (void)searchForString:(CPString)aString
+{
+    var query = escape(aString);
+    
+    var request = [[CPURLRequest alloc] initWithURL:"http://search.twitter.com/search.json?&q="+query+"&show_user=true"];
+    [request setHTTPMethod:@"GET"];
+    var connection = [CPURLConnection connectionWithRequest:request delegate:self];
+}
+
+- (void)connection:(CPURLConnection)aConnection didReceiveData:(CPString)data
+{
+    var jsonData = JSON.parse(data);
+
+    [[[CPApp delegate] searchController] setContent:jsonData.results];
+
+    // FIX ME: this is terrible
+    [[CPApp delegate].searchTable setIsLoading:NO];
+
+    [[CPRunLoop currentRunLoop] performSelectors];
+}
+
 @end
 
