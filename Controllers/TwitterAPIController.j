@@ -31,18 +31,16 @@
     
     var request = [[CPURLRequest alloc] initWithURL:"http://search.twitter.com/search.json?&q="+query+"&show_user=true"];
     [request setHTTPMethod:@"GET"];
-    var connection = [CPURLConnection connectionWithRequest:request delegate:self];
+    var connection = [CPJSONPConnection sendRequest:request callback:"callback" delegate:self];
 }
 
-- (void)connection:(CPURLConnection)aConnection didReceiveData:(CPString)data
-{
-    var jsonData = JSON.parse(data);
-
-    [[[CPApp delegate] searchController] setContent:jsonData.results];
-
+- (void)connection:(CPURLConnection)aConnection didReceiveData:(JSObject)data
+{    
+    [[[CPApp delegate] searchController] setContent:data.results];
+    
     // FIX ME: this is terrible
     [[CPApp delegate].searchTable setIsLoading:NO];
-
+    
     [[CPRunLoop currentRunLoop] performSelectors];
 }
 
