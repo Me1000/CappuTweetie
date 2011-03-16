@@ -350,7 +350,7 @@ activeTV = tweetTable;
     [searchController setContent:[]];
     [searchTable setIsLoading:YES];
         
-    var twitterApi = [[TwitterAPIController alloc] searchForString:query];
+    [apiController searchForString:query];
 }
 
 - (void)newTweet:(id)sender
@@ -366,7 +366,6 @@ activeTV = tweetTable;
 
 - (void)loadMoreTweets
 {
-    return;
     [apiController setLoadingMore:YES];
 
     if (activeTV === tweetTable)

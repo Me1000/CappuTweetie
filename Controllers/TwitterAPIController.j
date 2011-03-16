@@ -1,11 +1,15 @@
 @implementation TwitterAPIController : CPObject
 {
     id searchConnection;
+    id tweetConnection;
 
     BOOL loadingMore @accessors;
 
-    int normalTweetLimit;
-    int searchTweetLimit;
+    int normalTweetPage;
+    int searchTweetPage;
+
+    BOOL normalTweetCanLoadMore;
+    BOOL searchTweetCanLoadMore;
 
     CPString currentSearchString @accessors;
 }
@@ -15,14 +19,21 @@
     self = [super init];
 
     loadingMore = NO;
-    normalTweetLimit = 0;
-    searchTweetLimit = 0;
+    normalTweetCanLoadMore = YES;
+    searchTweetCanLoadMore = YES;
+    normalTweetPage = 0;
+    searchTweetPage = 0;
 
     return self;
 }
 
 - (void)getTweets
 {
+    if (tweetConnection || !normalTweetCanLoadMore)
+        return;
+
+    normalTweetPage++;
+
     /*var getData = new CFHTTPRequest();
 
     getData.open("GET", [[CPBundle mainBundle] pathForResource:"data.json"], true);
@@ -44,11 +55,11 @@
     getData.send("");*/
 
 
-    var lastTweet = [[[[CPApp delegate] tweetController] contentArray] count] ? "&since_id=" + [[[[CPApp delegate] tweetController] contentArray] lastObject].id_str : "";
+    var lastTweet = "&page="+normalTweetPage;
 
-    var query = escape("githubissues" + lastTweet);
-    
-    var request = [[CPURLRequest alloc] initWithURL:"http://search.twitter.com/search.json?&q="+query+"&show_user=true"];
+    var query = escape("githubissues");
+
+    var request = [[CPURLRequest alloc] initWithURL:"http://search.twitter.com/search.json?&q="+query+"&show_user=true&rpp=20&page="+normalTweetPage];
     [request setHTTPMethod:@"GET"];
     tweetConnection = [CPJSONPConnection sendRequest:request callback:"callback" delegate:self];
     [[[CPApp delegate] activeTV] setIsLoading:YES];
@@ -56,11 +67,23 @@
 
 - (void)searchForString:(CPString)aString
 {
-currentSearchString = aString;
-    var lastTweet = [[[[CPApp delegate] searchController] contentArray] count] ? "&since_id=" + [[[[CPApp delegate] searchController] contentArray] lastObject].id_str : "";
-    var query = escape(aString + lastTweet);
-    
-    var request = [[CPURLRequest alloc] initWithURL:"http://search.twitter.com/search.json?&q="+query+"&show_user=true"];
+
+    if (searchConnection || !searchTweetCanLoadMore)
+        return;
+
+    if (aString !== currentSearchString)
+        searchTweetPage = 1;
+    else
+        searchTweetPage++;
+
+    currentSearchString = aString;
+
+
+    var lastTweet = "&page="+searchTweetPage;
+    var query = escape(aString);
+
+
+    var request = [[CPURLRequest alloc] initWithURL:"http://search.twitter.com/search.json?&q="+query+"&show_user=true&rpp=20&page="+searchTweetPage];
     [request setHTTPMethod:@"GET"];
     searchConnection = [CPJSONPConnection sendRequest:request callback:"callback" delegate:self];
     [[[CPApp delegate] activeTV] setIsLoading:YES];
@@ -69,12 +92,29 @@ currentSearchString = aString;
 - (void)connection:(CPURLConnection)aConnection didReceiveData:(JSObject)data
 {
     if (aConnection === searchConnection)
+    {
         [[[CPApp delegate] searchController] addObjects:data.results];
+
+        if (data.results.length < 20)
+            searchTweetCanLoadMore = NO;
+    }
     else
+    {
         [[[CPApp delegate] tweetController] addObjects:data.results];
+
+        if (data.results.length < 20)
+            normalTweetCanLoadMore = NO;
+    }
 
     [[[CPApp delegate] activeTV] setIsLoading:NO];
     [[[CPApp delegate] activeTV] reloadData];
+
+    if (aConnection === searchConnection)
+        searchConnection = nil;
+    else
+        tweetConnection = nil;
+
+
 }
 
 @end
