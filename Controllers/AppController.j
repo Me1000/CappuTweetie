@@ -39,6 +39,9 @@ accountsController = [[AccountController alloc] init];
     CPArrayController   searchController    @accessors;
     CPWindow            preferencesWindow;
     SidebarView         sidebar @accessors;
+
+    CPTableView     activeTV @accessors;
+    id              apiController;
 }
 
 - (void)applicationDidFinishLaunching:(CPNotification)aNotification
@@ -109,11 +112,12 @@ accountsController = [[AccountController alloc] init];
     // we can make this size zero because it will be sized to fit when we add it to the scrollview.
     tweetTable = [[TweetTableView alloc] initWithFrame:CGRectMakeZero()];
     [tweetTable setDelegate:self];
+    [tweetTable setDataSource:self];
     [tweetTable setBackgroundColor:bgColor];
     [tweetTable setDoubleAction:@selector(didDoubleClick:)];
     [tweetTable setTarget:self];
     [tweetTable setColumnAutoresizingStyle:CPTableViewLastColumnOnlyAutoresizingStyle];
-
+activeTV = tweetTable;
     // Load tweets...
     tweetController = [[CPArrayController alloc] init];
     apiController = [[TwitterAPIController alloc] init];
@@ -122,7 +126,7 @@ accountsController = [[AccountController alloc] init];
     tweetsColumn = [[CPTableColumn alloc] initWithIdentifier:"tweets"];
     [tweetsColumn setWidth:322];
     [tweetTable addTableColumn:tweetsColumn];
-    [tweetsColumn bind:CPValueBinding toObject:tweetController withKeyPath:"arrangedObjects" options:nil];
+//    [tweetsColumn bind:CPValueBinding toObject:tweetController withKeyPath:"arrangedObjects" options:nil];
 
     var dataViewPrototype = [[TweetDataView alloc] initWithFrame:CGRectMake(0,0,322,100)];
     [tweetsColumn setDataView:dataViewPrototype];
@@ -195,7 +199,7 @@ accountsController = [[AccountController alloc] init];
     searchColumn = [[CPTableColumn alloc] initWithIdentifier:"tweets"];
     [searchColumn setWidth:322];
     [searchTable addTableColumn:searchColumn];
-    [searchColumn bind:CPValueBinding toObject:searchController withKeyPath:"arrangedObjects" options:nil];
+[searchTable setDataSource:self];
 
     var dataViewPrototype = [[TweetDataView alloc] initWithFrame:CGRectMake(0,0,322,100)];
     [searchColumn setDataView:dataViewPrototype];
@@ -362,7 +366,14 @@ accountsController = [[AccountController alloc] init];
 
 - (void)loadMoreTweets
 {
-    //alert("LOAD MOAR");
+    return;
+    [apiController setLoadingMore:YES];
+
+    if (activeTV === tweetTable)
+        [apiController getTweets];
+    else
+        [apiController searchForString:[apiController currentSearchString]];
+
 }
 
 - (CPMenu)tableView:(CPTableView)aTableView menuForTableColumn:(CPTableColumn)aColumn row:(int)aRow
@@ -385,6 +396,23 @@ accountsController = [[AccountController alloc] init];
     return menu;
 }
 
+- (int)numberOfRowsInTableView:(CPTableView)aTable
+{
+    if (aTable === tweetTable)
+        return [[tweetController contentArray] count];
+    else if (aTable === searchTable)
+        return [[searchController contentArray] count];
+}
+
+- (id)tableView:(CPTableView)aTable objectValueForTableColumn:(CPTableColumn)aColumn row:(int)aRow
+{
+
+    if (aTable === tweetTable)
+        return [[tweetController contentArray] objectAtIndex:aRow];
+    else if (aTable === searchTable)
+        return [[searchController contentArray] objectAtIndex:aRow];
+}
+
 - (int)tableView:(CPTableView)aTableView heightOfRow:(int)aRow
 {
     // To calculate the height of the row we find the width of the column
@@ -400,7 +428,9 @@ accountsController = [[AccountController alloc] init];
     // we have to make sure the width of the textfield is correct...
     [cachedTextField setFrame:CGRectMake(0, 0, width - 100, 0)];
 
-    [cachedTextField setStringValue:[tweetController contentArray][aRow].text];
+var thecont = (aTableView === tweetTable) ? tweetController : searchController
+
+    [cachedTextField setStringValue:[thecont contentArray][aRow].text];
     [cachedTextField sizeToFit];
 
     return MAX(65, [cachedTextField frame].size.height + 35);

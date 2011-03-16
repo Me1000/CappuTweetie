@@ -282,6 +282,10 @@ var cachedAvatars = {};
     context.DOMElement.width = context.DOMElement.height = 50;
     CGContextAddPath(context, path);
     CGContextClip(context);
+
+    if ([image loadStatus] !== CPImageLoadStatusCompleted)
+        return;
+
     CGContextDrawImage(context, rect, image);
     
     // hack attack for CGContextDrawImage!
@@ -291,8 +295,9 @@ var cachedAvatars = {};
 
 - (void)drawRect:(CPRect)aRect
 {
-    if(!image || [image loadStatus] !== CPImageLoadStatusCompleted) return;
-    
+    if(!image || [image loadStatus] !== CPImageLoadStatusCompleted)
+        return;
+
     var context = [[CPGraphicsContext currentContext] graphicsPort],
         shadowColor = [CPColor colorWithRed:0 green:0 blue:0 alpha:0.4];
         

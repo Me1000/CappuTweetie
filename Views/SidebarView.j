@@ -110,13 +110,19 @@
     
     // Prepare the notification object depending on what button is clicked...
     if (sender === tweetsButton)
+    {
         notificationMessage = @"timeline";
+        [[CPApp delegate] setActiveTV:[CPApp delegate].tweetTable];
+    }
     else if (sender === replyButton)
         notificationMessage = @"mentions";
     else if (sender === messagesButton)
         notificationMessage = @"messages";
     else if (sender === searchButton)
+    {
         notificationMessage = @"search";
+        [[CPApp delegate] setActiveTV:[CPApp delegate].searchTable];
+    }
     
     // Post the notification..
     [[CPNotificationCenter defaultCenter] postNotificationName:@"didClickSidebarButton" object:notificationMessage];
