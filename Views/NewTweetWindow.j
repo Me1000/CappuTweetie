@@ -30,7 +30,10 @@
         var contentView = [self contentView];
 
         if (aTweet)
-            [self setTitle:"In reply to "+aTweet.user.name];
+        {
+            var user =(aTweet.user) ? aTweet.user.name : aTweet.from_user;
+            [self setTitle:"In reply to "+user];
+        }
 
         var bottomView = [[CPView alloc] initWithFrame:CGRectMake(0, 100, 400, 35)];
         bg = [[CPImage alloc] initWithContentsOfFile:[[CPBundle mainBundle] pathForResource:"bottomColor.png"]];
