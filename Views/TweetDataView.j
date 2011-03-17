@@ -22,7 +22,7 @@ var cachedAvatars = {};
         authorName = [[CPTextField alloc] initWithFrame:CGRectMake(75, 5, 150, 20)];
         [authorName setFont:[CPFont boldSystemFontOfSize:13]];
         
-        timeSinceTweet = [[CPTextField alloc] initWithFrame:CGRectMake(225, 5, aFrame.size.width - 255, 20)];
+        timeSinceTweet = [[CPTextField alloc] initWithFrame:CGRectMake(215, 5, aFrame.size.width - 255, 20)];
         [timeSinceTweet setFont:[CPFont systemFontOfSize:11]];
         [timeSinceTweet setTextColor:[CPColor grayColor]];
         [timeSinceTweet setAlignment:CPRightTextAlignment];
@@ -94,6 +94,8 @@ var cachedAvatars = {};
 
     var tweetDate = new Date(aTweet.created_at);
     [timeSinceTweet setStringValue:[tweetDate relativeDateSinceNow]];
+    [timeSinceTweet sizeToFit];
+    [timeSinceTweet setFrameOrigin:CGPointMake(CGRectGetWidth([self bounds]) - CGRectGetWidth([timeSinceTweet bounds]) - 30)];
 
     [tweetText setStringValue:aTweet.text];
 
@@ -284,7 +286,10 @@ var cachedAvatars = {};
     CGContextClip(context);
 
     if ([image loadStatus] !== CPImageLoadStatusCompleted)
+    {
+        CGContextClearRect(context, rect);
         return;
+    }
 
     CGContextDrawImage(context, rect, image);
     
@@ -295,11 +300,16 @@ var cachedAvatars = {};
 
 - (void)drawRect:(CPRect)aRect
 {
-    if(!image || [image loadStatus] !== CPImageLoadStatusCompleted)
-        return;
+    var context = [[CPGraphicsContext currentContext] graphicsPort];
 
-    var context = [[CPGraphicsContext currentContext] graphicsPort],
-        shadowColor = [CPColor colorWithRed:0 green:0 blue:0 alpha:0.4];
+    if(!image || [image loadStatus] !== CPImageLoadStatusCompleted)
+    {
+        CGContextClearRect(context, aRect);
+        return;
+    }
+
+    
+    var shadowColor = [CPColor colorWithRed:0 green:0 blue:0 alpha:0.4];
         
     CGContextSetShadowWithColor(context, CGSizeMake(0, 1), 2, shadowColor);
     CGContextDrawImage(context, CGRectMake(2, 0, 50, 50), roundedImage);

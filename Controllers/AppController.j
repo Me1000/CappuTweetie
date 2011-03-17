@@ -437,6 +437,7 @@ var thecont = (aTableView === tweetTable) ? tweetController : searchController
 
 - (void)didDoubleClick:(id)sender
 {
+return;
     // FIX ME: Add delegate: when animation finishes close the window. 
     // Figure out what we double clicked on... if there is a reply load that reply chain all the way back,
     // otherwise place that tweet in its own array and load it into the controller...
