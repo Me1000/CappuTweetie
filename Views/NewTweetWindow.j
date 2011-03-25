@@ -91,7 +91,7 @@
 
         if (aTweet)
         {
-            [text setStringValue:"@" + aTweet.user.screen_name + " "];
+            [text setStringValue:"@" + user + " "];
             [text moveCursorToEnd];
         }
 
