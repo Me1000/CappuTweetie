@@ -1,8 +1,5 @@
 Tweetie written in Cappuccino...
 
 
-[Uncompressed demo](http://devongovett.github.com/CappuTweetie/)
-[NativeHost download - old](http://timetableapp.com/TestingEnviro/CappuTweetie/TweetieTable.zip)
-
-![screenshot](http://timetableapp.com/TestingEnviro/CappuTweetie/screenshot.png)
-
+I wouldn't actually reccomend using this code to begin learning Cappuccino, there are a TON of hacks.
+But, if you're interested in making a crazy custom UI in Cappuccino though, this might be good code to look at.
